@@ -1,0 +1,2 @@
+ill iterate through the list to find the command?
+loop: input_commmand == command
