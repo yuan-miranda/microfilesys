@@ -21,6 +21,65 @@ command_flags = {
     "delete": [],
 }
 
+class Write:
+    def write_end(flag, line, content):
+        print(flag, line, content)
+
+    def write_specific(flag, line, column, content):
+        print(flag, line, column, content)
+
+class Modify():
+    def modify_specific(flag, line, column, content):
+        print(flag, line, column, content)
+
+    def modify_all(flag, line, column, content):
+        print(flag, line, column, content)
+
+    def modify_all_specific(flag, line, column, content, replace_to):
+        print(flag, line, column, content, replace_to)
+
+class Remove:
+    def remove_substring(flag, line, content):
+        print(flag, line, content)
+
+    def remove_specific(flag, line, column):
+        print(flag, line, column)
+
+    def remove_all_specific(flag, line, content):
+        print(flag, line, content)
+
+class Clear:
+    def clear_line(flag, line):
+        print(flag, line)
+
+    def clear_all(flag):
+        print(flag)
+
+class Read:
+    def read_line(flag, line):
+        print(flag, line)
+
+    def read_all(flag):
+        print(flag)
+
+class Close:
+    def close(flag):
+        print(flag)
+
+class Create:
+    def create(file):
+        with open(file, "w") as f:
+            print("created")
+class Open:
+    def read(file):
+        file_editor(file, "r")
+    def read_write(file):
+        file_editor(file, "r+")
+class Delete:
+    def delete(file):
+        os.remove(file)
+        print("deleted")
+
 class Errors:
     error_messages = {
         "invalid command": {
@@ -91,49 +150,17 @@ class Errors:
     def delete(error_type):
         return "invalid syntax: expected 'delete file.py'"
 
-def is_line(line):
-    return line.isdigit()
-
-def is_multi_column(column):
-    pass
-def is_column(column):
-    pass
-    #is_correct_length = True if len(column) == 5 else False
-    #is_correct_format = True if 
-
-    # logic
-    # check if input <= input length (it needs to check the input first) then run the logic below
-    # if "a1" make "a1"
-    # if "a1:a2" make "a1:a2"
-
-    # write commnand
-    # a1        a1
-    # modify and remove command
-    # a1:a2      a1:a2
-    #
-
-    # FIX FLAGS PARAMAETER 9.20
-def is_flag_correct(input, length, flag):
-    return True if len(input) != len and flag in ["-rmsub", "--remove-substring"] else True
-class commands:
+class Commands: # COMBINE ALL THE COMMANDS? 9/23
     # flag line column content replace
 
     def write(user_input):
         flag = user_input[1]
 
-        if not flag in command_flags["write"]:
-            print(Errors.error_messages["invalid flag"]["write"])
-
-        elif len(user_input) == 4 and flag in ["-we", "--write-end"]: # flag line content
-            line = user_input[2]
-            content = user_input[3]
-            print(flag, line, content)
+        if len(user_input) == 4 and flag in ["-we", "--write-end"]: # flag line content
+            Write.write_end(flag, line = user_input[2], content = user_input[3])
 
         elif len(user_input) == 5 and flag in ["-ws", "--write-specific"]: # flag line column content
-            line = user_input[2]
-            column = user_input[3]
-            content = user_input[4]
-            print(flag, line, column, content)
+            Write.write_specific(flag, line = user_input[2], column = user_input[3], content = user_input[4])
 
         else:
             print(Errors.write(flag))
@@ -141,49 +168,29 @@ class commands:
     def modify(user_input):
         flag = user_input[1]
 
-        if not flag in command_flags["modify"]:
-            print(Errors.error_messages["invalid flag"]["modify"])
-            
-        elif len(user_input) == 5 and flag in ["-ms", "--modify-specific"]: # flag line column content
-            line = user_input[2]
-            column = user_input[3]
-            content = user_input[4]
-            print(flag, line, column, content)
+        if len(user_input) == 5 and flag in ["-ms", "--modify-specific"]: # flag line column content
+            Modify.modify_specific(flag, line = user_input[2], column = user_input[3], content = user_input[4])
 
         elif len(user_input) == 4 and flag in ["-ma", "--modify-all"]: # flag line content
-            line = user_input[2]
-            content = user_input[3]
-            print(flag, line, column, content)
+            Modify.modify_all(flag, line = user_input[2], content = user_input[3])
                 
         elif len(user_input) == 5 and flag in ["-mas", "--modify-all-specific"]: # flag line content replace
-            line = user_input[2]
-            content = user_input[3]
-            replace_to = user_input[4]
-            print(flag, line, column, content, replace_to)
+            Modify.modify_all_specific(flag, line = user_input[2], content = user_input[3], replace_to = user_input[4])
 
         else:
             print(Errors.modify(flag))
     
     def remove(user_input):
         flag = user_input[1]
-
-        if not flag in command_flags["remove"]:
-            print(Errors.error_messages["invalid flag"]["remove"])
-
-        elif len(user_input) == 4 and flag in ["-rmsub", "--remove-substring"]: # flag line content
-            line = user_input[2]
-            content = user_input[3]
-            print(flag, line, content)
+        # Remove.rmsub
+        if len(user_input) == 4 and flag in ["-rmsub", "--remove-substring"]: # flag line content
+            Remove.remove_substring(flag, line = user_input[2], content = user_input[3])
 
         elif len(user_input) == 4 and flag in ["-rms", "--remove-specific"]: # flag line column
-            line = user_input[2]
-            column = user_input[3]
-            print(flag, line, column)
+            Remove.remove_specific(flag, line = user_input[2], column = user_input[3])
 
         elif len(user_input) == 4 and flag in ["-rmas", "--remove-all-specific"]: # flag line content
-            line = user_input[2]
-            content = user_input[3]
-            print(flag, line, column, content)
+            Remove.remove_all_specific(flag, line = user_input[2], content = user_input[3])
 
         else:
             print(Errors.remove(flag))
@@ -191,15 +198,11 @@ class commands:
     def clear(user_input):
         flag = user_input[1]
 
-        if not user_input[1] in command_flags["clear"]:
-            print(Errors.error_messages["invalid flag"]["clear"])
-
-        elif len(user_input) == 3 and flag in ["-cl", "--clear-line"]: # flag line
-            line = user_input[2]
-            print(flag, line)
+        if len(user_input) == 3 and flag in ["-cl", "--clear-line"]: # flag line
+            Clear.clear_line(flag, line = user_input[2])
 
         elif len(user_input) == 2 and flag in ["-ca", "--clear-all"]: # flag
-            print(flag)
+            Clear.clear_all(flag)
 
         else:
             print(Errors.clear(flag))
@@ -207,15 +210,11 @@ class commands:
     def read(user_input):
         flag = user_input[1]
 
-        if not flag in command_flags["read"]:
-            print(Errors.error_messages["invalid flag"]["read"])
-
-        elif len(user_input) == 3 and flag in ["-rl", "--read-line"]: # flag line
-            line = user_input[2]
-            print(flag, line)
+        if len(user_input) == 3 and flag in ["-rl", "--read-line"]: # flag line
+            Read.read_line(flag, line = user_input[2])
 
         elif len(user_input) == 2 and flag in ["-ra", "--read-all"]: # flag
-            print(flag)
+            Read.read_all(flag)
 
         else:
             print(Errors.read(flag))
@@ -223,11 +222,8 @@ class commands:
     def close(user_input):
         flag = user_input[1]
 
-        if not flag in command_flags["close"]:
-            print(Errors.error_messages["invalid flag"]["close"])
-
-        elif len(user_input) == 2 and flag in ["-c", "--close"]: # flag
-            print(flag)
+        if len(user_input) == 2 and flag in ["-c", "--close"]: # flag
+            Close.close(flag)
 
         else:
             print(Errors.close(flag))
@@ -242,10 +238,9 @@ class commands:
             print("file already exist")
 
         else:
-            with open(file, "w") as f:
-                print("created")
-    
-    def open(user_input):
+            Create.create(file)
+
+    def open(user_input): # MAKE CLASS? 9/23
         if not user_input[1] in command_flags["open"]:
             print(Errors.error_messages["invalid flag"]["open"])
             return
@@ -260,10 +255,10 @@ class commands:
 
         if file in os.listdir():
             if flag in ["-r", "--read"]:
-                file_editor(file, "r")
-
+                Open.read(file)
+                
             elif flag in ["-rw", "--read-write"]:
-                file_editor(file, "r+")
+                Open.read_write(file)
 
         else:
             print("file doesnt exist")
@@ -275,76 +270,112 @@ class commands:
             print(Errors.delete("invalid syntax"))
                 
         elif file in os.listdir():
-            os.remove(file)
-            print("deleted")
+            Delete.delete(file)
 
         else:
             print("file doesnt exist")
 
-minor_command_handler = {
-    "write":  commands.write,
-    "modify": commands.modify,
-    "remove": commands.remove,
-    "clear":  commands.clear,
-    "read":   commands.read,
-    "close":  commands.close,
+# idk how to explain this but I use this when I need to
+# iterate on commands and call them in their proper operation
+file_editor_cmd_handler = {
+    "write":  Commands.write,
+    "modify": Commands.modify,
+    "remove": Commands.remove,
+    "clear":  Commands.clear,
+    "read":   Commands.read,
+    "close":  Commands.close,
 }
 
-major_command_handler = {
-    "create": commands.create,
-    "open": commands.open,
-    "delete": commands.delete
+file_manager_cmd_handler = {
+    "create": Commands.create,
+    "open":   Commands.open,
+    "delete": Commands.delete
 }
 
+# make the input into a list
+def make_list(text):
+    return text.split()
+
+# manage the file editing logic
 def file_editor(filepath, mode):
     with open(filepath, mode) as f:
         while True:
             try:
-                user_input = input(f"microfilesys-{filepath}: ").split()
+                user_input = input(f"microfilesys-{filepath}: ")
+                user_input_formatted = make_list(user_input)
             except KeyboardInterrupt:
                 print("\nKeyboardInterrupt")
                 return
             except Exception as error:
                 print("An error occured: ", error)
 
+            # ignore input if its empty
             if not user_input:
                 continue
+            
+            cmd = user_input_formatted[0]
 
-            elif len(user_input) == 1 and user_input[0] in ["quit", "exit"]:
+            # check if user want to quit
+            if user_input in ["quit", "exit"]:
                 exit()
-                    
-            command = user_input[0]
 
-            if not command in minor_command_handler:
-                print(f"'{' '.join(user_input)}' is not a valid file editor command")
+            # prompt to use the command manual if input is valid command but
+            # only the command is being called
+            elif len(user_input_formatted) == 1 and cmd in file_editor_cmd_handler:
+                print(Errors.error_messages["invalid command"][cmd])
 
-            elif len(user_input) == 1:
-                print(Errors.error_messages["invalid command"][command])
+            # throw an error if user type a non-command input
+            elif not cmd in file_editor_cmd_handler:
+                print(f"'{' '.join(user_input_formatted)}' is not a valid file editor command")
+            
+            # note: user_input[1] is the flag
+            # throw an error if the command's flag is incorrect
+            elif not user_input[1] in command_flags[cmd]:
+                print(Errors.error_messages["invalid flag"][cmd])
+
+            # call the appopriate command when it pass all the conditions above
             else:
-                minor_command_handler[command](user_input)
+                file_editor_cmd_handler[cmd](user_input_formatted)
 
+# manage the file operation logic
 def file_manager():
-    while True:
+    running = True
+    while running:
         try:
-            user_input = input("microfilesys: ").split()
+            user_input = input("microfilesys: ")
+            user_input_formatted = make_list(user_input)
         except KeyboardInterrupt:
             print("\nKeyboardInterrupt")
             exit()
+        except Exception as error:
+            print("An error occured: ", error)
 
+        # ignore input if its empty
         if not user_input:
             continue
+        
+        cmd = user_input_formatted[0]
 
-        command = user_input[0]
-
-        if len(user_input) == 1 and command in ["quit", "exit"]:
+        # check if user want to quit
+        if user_input in ["quit", "exit"]:
             exit()
-
-        elif len(user_input) == 1 and command in major_command_handler: # MAKE THIS ACCEPT 1 or MORE INPUT FOR file_editor
-            print(Errors.error_messages["invalid command"][command])
-        elif not command in major_command_handler:
-            print(f"'{' '.join(user_input)}' is not a valid file manager command")
+        
+        # prompt to use the command manual if input is valid command but
+        # only the command is being called
+        elif len(user_input_formatted) == 1 and cmd in file_manager_cmd_handler:
+            print(Errors.error_messages["invalid command"][cmd])
+        
+        # throw an error if user type a non-command input
+        elif not cmd in file_manager_cmd_handler:
+            print(f"'{' '.join(user_input_formatted)}' is not a valid file manager command")
+        
+        # call the appopriate command when it pass all the conditions above
         else:
-            major_command_handler[command](user_input)
+            file_manager_cmd_handler[cmd](user_input_formatted)
+
+
+def main():
+    file_manager()
 
 if __name__ == "__main__":
-    file_manager()
+    main()

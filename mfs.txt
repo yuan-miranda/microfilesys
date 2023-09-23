@@ -107,7 +107,7 @@ delete: MAJOR
 command  |  flag        alt flag              | line |  column  | content  |  replace  |  comment
 -----------------------------------------------------------------------------------------------
 write       -we         --write-end             1                  "x"                  # 1.0 done
-write       -ws         --write-specific        1       08         "x"                  # 1.1 done
+write       -ws         --write-specific        1       8          "x"                  # 1.1 done
 -----------------------------------------------------------------------------------------------
 modify      -ms         --modify-specific       1       a4:a8      "x"                  # 2.0 done
 modify      -ma         --modify-all            1                  "x"                  # 2.1 done
