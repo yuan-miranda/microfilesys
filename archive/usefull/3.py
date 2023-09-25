@@ -24,3 +24,8 @@ resulting_string = generate_string(desired_length)
 # Print the resulting string and its length
 print(resulting_string)
 print(len(resulting_string))
+
+
+
+
+# NOT WORKING

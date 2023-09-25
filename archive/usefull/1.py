@@ -11,3 +11,8 @@ def find_middle(input_list):
 input_list = [1, 2, 3]
 middle_element = find_middle(input_list)
 print("The middle element is:", middle_element)
+
+
+
+
+# NOT WORKING

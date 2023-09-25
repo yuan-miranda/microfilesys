@@ -1,0 +1,48 @@
+write:
+
+Flag: -we or --write-end
+Appropriate file access: w (truncates the file if it already exists, position at start)
+write (specific):
+
+Flag: -ws or --write-specific
+Appropriate file access: w (truncates the file if it already exists, position at start)
+modify:
+
+Flag: -ms or --modify-specific
+Appropriate file access: r+ (does not truncate, can read and modify, position at start)
+modify (all):
+
+Flag: -ma or --modify-all
+Appropriate file access: w+ (truncates the file if it already exists, position at start)
+modify (all specific):
+
+Flag: -mas or --modify-all-specific
+Appropriate file access: w+ (truncates the file if it already exists, position at start)
+remove substring:
+
+Flag: -rmsub or --remove-substring
+Appropriate file access: r+ (does not truncate, can read and modify, position at start)
+remove specific:
+
+Flag: -rms or --remove-specific
+Appropriate file access: r+ (does not truncate, can read and modify, position at start)
+remove all specific:
+
+Flag: -rmas or --remove-all-specific
+Appropriate file access: w+ (truncates the file if it already exists, position at start)
+clear line:
+
+Flag: -cl or --clear-line
+Appropriate file access: r+ (does not truncate, can read and modify, position at start)
+clear all:
+
+Flag: -ca or --clear-all
+Appropriate file access: w (truncates the file if it already exists, position at start)
+read line:
+
+Flag: -rl or --read-line
+Appropriate file access: r (read-only, does not truncate, position at start)
+read all:
+
+Flag: -ra or --read-all
+Appropriate file access: r (read-only, does not truncate, position at start)

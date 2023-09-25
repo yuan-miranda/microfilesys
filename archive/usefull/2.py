@@ -9,3 +9,8 @@ for i in range(6):
             #print(j, end='')
 
 print(''.join(mylist))
+
+
+
+
+# NOT WORKING
