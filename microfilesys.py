@@ -1,5 +1,7 @@
-# NEW ERROR 9/25
-
+# ERROR 9/23
+    # COMBINE ALL THE COMMANDS? 9/23
+# ERROR 9/25
+    # MAKE THE ERROR FLAG MORE READABLE
 import os
 
 current_open_file = ""
@@ -159,11 +161,11 @@ class Commands: # COMBINE ALL THE COMMANDS? 9/23
 
     def write(user_input):
         flag = user_input[1]
-
-        if len(user_input) == 4 and flag in ["-we", "--write-end"]: # flag line content
+        
+        if len(user_input) == 4 and flag in ["-we", "--write-end"] and is_line(user_input[2]): # flag line content
             Write.write_end(flag, line = user_input[2], content = user_input[3]) # I JUST NEED TO PASS THE CONTENT ON WITH FUNCTION
 
-        elif len(user_input) == 5 and flag in ["-ws", "--write-specific"]: # flag line column content
+        elif len(user_input) == 5 and flag in ["-ws", "--write-specific"] and is_line(user_input[2]): # flag line column content
             Write.write_specific(flag, line = user_input[2], column = user_input[3], content = user_input[4])
 
         else:
@@ -172,13 +174,13 @@ class Commands: # COMBINE ALL THE COMMANDS? 9/23
     def modify(user_input):
         flag = user_input[1]
 
-        if len(user_input) == 5 and flag in ["-ms", "--modify-specific"]: # flag line column content
+        if len(user_input) == 5 and flag in ["-ms", "--modify-specific"] and is_line(user_input[2]): # flag line column content
             Modify.modify_specific(flag, line = user_input[2], column = user_input[3], content = user_input[4])
 
-        elif len(user_input) == 4 and flag in ["-ma", "--modify-all"]: # flag line content
+        elif len(user_input) == 4 and flag in ["-ma", "--modify-all"] and is_line(user_input[2]): # flag line content
             Modify.modify_all(flag, line = user_input[2], content = user_input[3])
                 
-        elif len(user_input) == 5 and flag in ["-mas", "--modify-all-specific"]: # flag line content replace
+        elif len(user_input) == 5 and flag in ["-mas", "--modify-all-specific"] and is_line(user_input[2]): # flag line content replace
             Modify.modify_all_specific(flag, line = user_input[2], content = user_input[3], replace_to = user_input[4])
 
         else:
@@ -186,13 +188,14 @@ class Commands: # COMBINE ALL THE COMMANDS? 9/23
     
     def remove(user_input):
         flag = user_input[1]
-        if len(user_input) == 4 and flag in ["-rmsub", "--remove-substring"]: # flag line content
+
+        if len(user_input) == 4 and flag in ["-rmsub", "--remove-substring"] and is_line(user_input[2]): # flag line content
             Remove.remove_substring(flag, line = user_input[2], content = user_input[3])
 
-        elif len(user_input) == 4 and flag in ["-rms", "--remove-specific"]: # flag line column
+        elif len(user_input) == 4 and flag in ["-rms", "--remove-specific"] and is_line(user_input[2]): # flag line column
             Remove.remove_specific(flag, line = user_input[2], column = user_input[3])
 
-        elif len(user_input) == 4 and flag in ["-rmas", "--remove-all-specific"]: # flag line content
+        elif len(user_input) == 4 and flag in ["-rmas", "--remove-all-specific"] and is_line(user_input[2]): # flag line content
             Remove.remove_all_specific(flag, line = user_input[2], content = user_input[3])
 
         else:
@@ -201,7 +204,7 @@ class Commands: # COMBINE ALL THE COMMANDS? 9/23
     def clear(user_input):
         flag = user_input[1]
 
-        if len(user_input) == 3 and flag in ["-cl", "--clear-line"]: # flag line
+        if len(user_input) == 3 and flag in ["-cl", "--clear-line"] and is_line(user_input[2]): # flag line
             Clear.clear_line(flag, line = user_input[2])
 
         elif len(user_input) == 2 and flag in ["-ca", "--clear-all"]: # flag
@@ -213,7 +216,7 @@ class Commands: # COMBINE ALL THE COMMANDS? 9/23
     def read(user_input):
         flag = user_input[1]
 
-        if len(user_input) == 3 and flag in ["-rl", "--read-line"]: # flag line
+        if len(user_input) == 3 and flag in ["-rl", "--read-line"] and is_line(user_input[2]): # flag line
             Read.read_line(line = int(user_input[2]))
 
         elif len(user_input) == 2 and flag in ["-ra", "--read-all"]: # flag
@@ -313,8 +316,15 @@ def read_line_file(file, line):
     with open(file, 'r') as f:
         try:
             return f.readlines()[line - 1] # indexing
-        except IndexError:
-            print()
+        except Exception as error:
+            return f"'{file}' is only {get_file_legth(file)} line: {error}"
+
+def get_file_legth(file):
+    with open(file, 'r') as f:
+        return len(f.readlines())
+
+def is_line(line):
+    return line.isdigit()
 
 # manage the file editing logic
 def file_editor(filepath):
@@ -352,6 +362,9 @@ def file_editor(filepath):
         # throw an error if the command's flag is incorrect
         elif not formatted_user_input[1] in command_flags[cmd]:
             print(Errors.error_messages["invalid flag"][cmd])
+
+        elif len(formatted_user_input) >= 3 and not is_line(formatted_user_input[2]):
+            print(f"{' '.join(formatted_user_input[:2])} '{formatted_user_input[2]}' {' '.join(formatted_user_input[3:])}") # MAKE THE ERROR FLAG MORE READABLE
 
         # command to close the file (not really closes the file but go back at file_manager())
         # its here because it needs to check if the flag and its in correct command format above
