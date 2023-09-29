@@ -6,6 +6,7 @@ import os
 
 current_open_file = ""
 
+
 command_flags_that_has_line = {
     "write":  ["-we", "--write-end",
                "-ws", "--write-specific"],
@@ -284,7 +285,7 @@ class Commands: # COMBINE ALL THE COMMANDS? 9/23
                 Open.read_write(file)
 
         else:
-            print("file doesnt exist")
+            print(f"'{file}' doesnt exist")
 
     def delete(user_input):
         file = user_input[1]
@@ -379,6 +380,7 @@ def file_editor(filepath):
         elif not f_user_input[1] in command_flags[cmd]:
             print(Errors.error_messages["invalid flag"][cmd])
 
+        # throw an error if the line on command is not number
         elif length(f_user_input, '>=', 3) and not is_line(f_user_input[2]) and f_user_input[1] in command_flags_that_has_line[cmd]:
             print(f"invalid syntax: '{f_user_input[2]}' is not valid, line must be number") # MAKE THE ERROR FLAG MORE READABLE
 
