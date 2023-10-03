@@ -17,11 +17,7 @@ class Command:
             os.remove(file)
             print(f"'{file}' deleted")
 
-    def open_file(file, mode):
-        if mode not in ["-r", "-w"]:
-            print(f"'{mode}' is not a valid file access mode, use '-r' for read and '-w' for write")
-            return
-    
+    def open_file(file, mode):    
         mode = "r" if mode == "-r" else "r+"
         file_editor(file, mode)
 
@@ -62,7 +58,7 @@ def file_editor(file, mode):
                 if command_args_len == 2 and command_args[1] in ["-h", "-help"]:
                     print("Usage:")
                     print("\tread (-ln line=1 | -all)")
-                    print("\twrite (-ln | -end) line=1 content=\"string\"")
+                    print("\twrite (-ln | -end) line=1 content=\"str\"")
                     print("\tclear (-ln line=1 | -all)")
 
             elif cmd == "read":
@@ -122,10 +118,10 @@ def file_manager():
                 print(f"Expected 'delete filename'")
 
         elif cmd == "open":
-            if length_of_command_args == 3:
+            if length_of_command_args == 3 and command_args[1] in ["-r", "-w"]:
                 Command.open_file(command_args[2], command_args[1])
             else:
-                print(f"Expected 'open -mode filename'")
+                print(f"Expected 'open (-r | -w) filename'")
         else:
             print("Invalid Input")
 
