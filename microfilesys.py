@@ -60,9 +60,6 @@ class Command:
         """
         @staticmethod
         def display_help():
-            """
-            display the help guide on the console.
-            """
             print("file editor commands")
             print("Usage:")
             print("\tread (-ln line=1 | -all)")
@@ -76,14 +73,8 @@ class Command:
             print("\topen file")
 
     class create:
-        """
-        all create related functions.
-        """
         @staticmethod
         def file(filename):
-            """
-            create a file.
-            """
             if is_file(filename):
                 print(f"'{filename}' already exist")
                 
@@ -100,9 +91,6 @@ class Command:
                 pass
 
     class delete:
-        """
-        all delete related functions.
-        """
         @staticmethod
         def file(filename):
             """
@@ -116,9 +104,6 @@ class Command:
                 print(f"'{filename}' deleted")
 
     class open:
-        """
-        all open related functions.
-        """
         @staticmethod
         def file(filename):
             """
@@ -131,9 +116,6 @@ class Command:
                 file_editor(filename)
 
     class read:
-        """
-        all read related functions.
-        """
         def line(filename, line):
             """
             read a single line on the file and print it.
@@ -153,9 +135,6 @@ class Command:
 
         @staticmethod
         def all(filename):
-            """
-            reads all the lines on the file and print it.
-            """
             with open(filename, 'r') as file:
                 print("____________________________________________________________")
 
@@ -165,9 +144,6 @@ class Command:
                 print("____________________________________________________________")
 
     class write:
-        """
-        all write related functions.
-        """
         @staticmethod
         def line(filename, line, content):
             """
@@ -177,9 +153,6 @@ class Command:
 
         @staticmethod
         def end(filename, line_length, content):
-            """
-            write at the end of the specified line.
-            """
             with open(filename, 'r+') as file:
                 lines = file.readlines()
                 
@@ -195,9 +168,6 @@ class Command:
                     print(f"line must be in range of 1 to {len(lines)}")
     
     class clear():
-        """
-        all clear related functions.
-        """
         @staticmethod
         def line(filename, line):
             """
@@ -206,9 +176,6 @@ class Command:
             print("clear line")
         @staticmethod
         def all(filename):
-            """
-            clear all the file content
-            """
             # wtf is this
             Command.delete.file(filename)
             Command.create.file(filename)
@@ -248,9 +215,42 @@ flag_with_line = ["-ln", "-end"]
 
 # quit command keyword
 quit_command = ["q", "quit", "exit"]
+help_command = ["h", "help"]
 
 def file_editor(filename):
-    pass
+    running = True
+    while running:
+        try:
+            user_input = input(f"microfilesys-{filename}: ")
+        except KeyboardInterrupt:
+            print("\nKeyboardInterrupt")
+            return
+        
+        if not user_input:
+            continue
+        
+        if user_input in quit_command:
+            return
+
+        cmd_args = user_input.split()
+        argument_length = len(cmd_args)
+        
+        cmd = cmd_args[0]
+        flag = cmd_args[1] if argument_length >= 2 else False
+        line = cmd_args[2] if argument_length >= 3 and line.isdigit() else False
+        content = cmd_args[3:] if argument_length >= 4 else False
+        
+        if cmd not in editor_command:
+            print(f"'{cmd}' is not a valid command in '{user_input}'")
+        
+        if cmd in editor_command and argument_length == 1:
+            print(command_error[cmd])
+
+        if not line and argument_length == 3 and flag in flag_with_line:
+            print(f"'{line}' is not a number to be a valid line")
+
+        elif cmd == "help":
+            pass
 
 def file_manager():
     """
@@ -265,11 +265,15 @@ def file_manager():
             print("\nKeyboardInterrupt")
             exit()
         
-        if not user_input:
+        if not user_input.strip():
             continue
 
-        if user_input in quit_command:
+        elif user_input.strip() in quit_command:
             exit()
+
+        elif user_input.strip() in help_command:
+            Command.help.display_help()
+            continue
 
         command_argument = user_input.split()
         argument_length = len(command_argument)
@@ -280,12 +284,6 @@ def file_manager():
         if command not in manager_command:
             print(f"'{command}' is not a valid command in '{user_input}'")
             continue
-
-        elif command == "help":
-            if argument_length == 1:
-                Command.help.display_help()
-            else:
-                print("Expected 'help")
 
         elif command == "create":
             if argument_length == 2:
