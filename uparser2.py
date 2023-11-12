@@ -65,3 +65,5 @@ parser.add_command("clear", options=['-ln', '-all'], line=1)
 
 # Parse input commands
 parser.parse_command("write -end 1 'bruh'")
+print("\n")
+parser.parse_command("read -ln -ln")
