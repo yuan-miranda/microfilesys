@@ -1,4 +1,5 @@
 import os
+import urparser
 
 def file_length(filename):
     """
