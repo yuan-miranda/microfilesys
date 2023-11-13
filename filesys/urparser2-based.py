@@ -26,10 +26,12 @@ class Urparser:
         pass
 
 
+if 
+
 
 
 parser = Urparser()
 parser.add_command("read", options=[{'-ln': {'line_num': 0}}, '-all'])
 parser.add_command("clear", options=[{'-ln': {'line_number': 0}}, '-all'])
-parser.add_command("write": options=[{'-ln', '-all'])
+parser.add_command("write", options=['-ln', '-all'], line_required=True, argument_required=True)
 parser.parse_argument("read -ln 1")
