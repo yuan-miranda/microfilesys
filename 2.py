@@ -26,12 +26,13 @@ def is_content(content, content_index):
     return True
 
 input_string = input("Enter: ")
+input_parts = input_string.split()
 #quotes = input_string.find('"') # FIND ALL THE QUOTES
 # Extract the desired substring
 #desired_substring = get_content(input_string.split(), 3)
 #print(desired_substring)
 
 #print(quotes)
-if is_content(input_string.split(), 1):
-    print(get_content(input_string.split(), 1))
+if is_content(input_parts, 1):
+    print(get_content(input_parts, 1))
 #print(is_content(input_string.split(), 1))
