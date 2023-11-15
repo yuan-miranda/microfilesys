@@ -1,3 +1,4 @@
+# return a string literal of the content in the specific location
 def get_content(command_parts, content_index):
     return ' '.join(command_parts[content_index:])[1:-1]
 
@@ -7,7 +8,6 @@ def is_content(command_parts, content_index):
     content_start = string[0]
     content_end = string[-1]
 
-    # early return if the content has more or less than double quotes on it
     # prevent: a", a"", '"a"'
     if content_start != '"' and string.count('"') != 2:
         print(f"missing \" on the start of the content: {string}")
@@ -18,16 +18,18 @@ def is_content(command_parts, content_index):
         print(f"missing \" on the end of the content: {string}")
         return False
     
+    # if the content has more or less than double quotes on it
     if string.count('"') != 2:
-        print(f"'{string}' is not a valid content, use pair of double quoation mark when enclosing a content i.e. \"some string\"")
+        print(f"invalid content format: {string}")
         return False
     
-    
-
     return True
 
+
+# Blessed are thy people who will read this code in the future
 def parse_command(command_input):
     command_parts = command_input.split()
+    command_join = ' '.join(command_parts)
     length = len(command_parts)
 
     command = command_parts[0]
@@ -35,71 +37,90 @@ def parse_command(command_input):
     line    = command_parts[2] if length >= 3 else None
     content = command_parts[3] if length >= 4 else None
 
+    # no option provided
+    if not option:
+        print("no option provided")
+        return
 
-    # read
+    # command read
     if command == "read":
-        # no option provided
-        if not option:
-            print("no option provided")
-            return
-        
-        # option is -l
+        # option -l
         if option == '-l':
-            # expected line after -l
             if length == 2:
                 print("expexted line number after -l")
-            # correct line format
             elif length == 3:
-                # valid line
                 if line and line.isdigit():
                     print("line")
                     pass # call read line
-                # line is NaN
                 else:
                     print("line not number")
-            # invalid line format
             else:
                 print("invalid line length")
 
-        # option is -all
-        elif option == '-all':
-            # correct line format
+        # option -a
+        elif option == '-a':
             if length == 2:
                 print("all")
                 pass # call read all
-            # invalid line format
             else:
                 print("invalid all length")
-        # invalid read option
         else:
             print("invalid option")
     
-    # write
+    # command write
     elif command == "write":
-        # no option provided
-        if not option:
-            print("no option provided")
-            return
-
-        # option is -l
+        # option -l
         if option == '-l':
-            # expected line after -l
             if length == 2:
                 print("expexted line number after -l")
-            # expected content
             elif length == 3:
                 if line and line.isdigit():
-                    print("expected content after line")
+                    print(f"expected content after line: {command_join} \"example content\"")
                 else:
                     print("line not number")
                     
             elif length >= 4:
                 if is_content(command_parts, 3):
                     print(get_content(command_parts, 3))
+                    pass # call write line
             else:
                 print("invalid line length")
 
-        elif option == '-end':
+        # option -end
+        elif option == '-e':
+            if length == 2:
+                print("expexted line number after -e")
+            elif length == 3:
+                if line and line.isdigit():
+                    print(f"expected content after line: {command_join} \"example content\"")
+                else:
+                    print("line not number")
+            elif length >= 4:
+                if is_content(command_parts, 3):
+                    print(get_content(command_parts, 3))
+                    pass # call write line
+            else:
+                print("invalid line length")
+        else:
+            print("invalid option")
+
+    # command clear
+    elif command == "clear":
+        # option -l
+        if option == '-l':
+            if length == 2:
+                print("expexted line number after -l")
+            elif length == 3:
+                if line and line.isdigit():
+                    print("line")
+                    pass # call read line
+                else:
+                    print("line not number")
+            else:
+                print("invalid line length")
+
+        # option -a
+        elif option == '-a':
             if length == 2:
                 print("all")
                 pass # call read all
@@ -107,12 +128,13 @@ def parse_command(command_input):
                 print("invalid all length")
         else:
             print("invalid option")
-
-
     else:
         print("invalid command")
 
 while True:
-    arg = input()
+    try:
+        arg = input()
+    except KeyboardInterrupt:
+        exit()
     if arg:
         parse_command(arg)
