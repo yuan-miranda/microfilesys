@@ -1,0 +1,15 @@
+if self.command in self.file_opetation_command_handlers:
+                # no option provided
+                if self.option:
+                    self.file_opetation_command_handlers[self.command]()
+                else:
+                    print("no option provided")
+                    return
+            else:
+                print("invalid command")
+
+
+
+def file_manager(self):
+        # open a file
+        self.manage_file_command_handlers[self.command]()
