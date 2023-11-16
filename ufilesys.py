@@ -100,7 +100,21 @@ class Microfilesys:
             print('\n' + file.read() + '\n')
     
     def writeline(self):
-        pass
+        def write_to_specific_line(file_path, line_number, new_content):
+        # Read the existing content of the file
+        with open(file_path, 'r') as file:
+            lines = file.readlines()
+
+        # Modify the desired line
+        if 1 <= line_number <= len(lines):
+            lines[line_number - 1] = new_content + '\n'  # Adjusting for 0-based indexing
+
+            # Write the updated content back to the file
+            with open(file_path, 'w') as file:
+                file.writelines(lines)
+        else:
+            print(f"Line number {line_number} is out of range.")
+
     def writeend(self):
         with open(self.open_file, 'r+') as file:
                 lines = file.readlines()
