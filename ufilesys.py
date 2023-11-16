@@ -1,5 +1,14 @@
 import os
 
+# NOTE TO CHANGE
+# convert self.line to int 11/16
+#   writeend()
+#   line not number error
+#   get_content to just auto deetect not index specified
+
+# TODO FIX:
+# writeend() having double quotes on content
+
 # return a string literal of the content in the specific location
 def get_content(command_parts, content_index):
     return ' '.join(command_parts[content_index:])[1:-1]
@@ -86,12 +95,27 @@ class Microfilesys:
                 print(f"IndexError: '{self.open_file}' is only {file_length(self.open_file)} lines long not {self.line}.")
 
     def readall(self):
-        pass
+        with open(self.open_file, 'r') as file:
+            # read whole file
+            print('\n' + file.read() + '\n')
     
     def writeline(self):
         pass
     def writeend(self):
-        pass
+        with open(self.open_file, 'r+') as file:
+                lines = file.readlines()
+                self.line = int(self.line)
+                
+                # check if input line is in range of file lines
+                if self.line > 0 and self.line <= len(lines):
+
+                    # write at the end of the line using this
+                    lines[self.line - 1] = lines[self.line - 1].rstrip('\n') + get_content(self.command_parts, 3) + '\n'
+                    file.seek(0)
+                    file.writelines(lines)
+
+                else:
+                    print(f"line must be in range of 1 to {len(lines)}")
 
     def clearline(self):
         pass
