@@ -4,14 +4,10 @@ import os
 # convert self.line to int 11/16
 #   writeend()
 #   line not number error
-#   get_content to just auto deetect not index specified
+#   get_content to just auto deetect not index specified FIX
 
 # TODO FIX:
 # writeend() having double quotes on content
-
-# return a string literal of the content in the specific location
-def get_content(command_parts, content_index):
-    return ' '.join(command_parts[content_index:])[1:-1]
 
 # check if the input is a content
 def is_content(command_parts, content_index):
@@ -35,6 +31,27 @@ def is_content(command_parts, content_index):
         return False
     
     return True
+
+def get_content(input_string):
+    result = []
+    current_word = ''
+    inside_quotes = False
+
+    for char in input_string:
+        if char == ' ' and not inside_quotes:
+            # Split at space only if not inside quotes
+            result.append(current_word)
+            current_word = ''
+        elif char == '"':
+            # Toggle the inside_quotes flag when a double quote is encountered
+            inside_quotes = not inside_quotes
+        else:
+            current_word += char
+
+    # Add the last word after the loop
+    result.append(current_word)
+
+    return result
 
 def is_file(filename):
     return filename in os.listdir()
@@ -73,6 +90,7 @@ class Microfilesys:
         self.file_manager_mode   = "file manager"
         self.status             = self.file_manager_mode
 
+        self.command_input      = None
         self.command            = None
         self.option             = None
         self.content            = None
@@ -100,36 +118,37 @@ class Microfilesys:
             print('\n' + file.read() + '\n')
     
     def writeline(self):
-        def write_to_specific_line(file_path, line_number, new_content):
-        # Read the existing content of the file
-        with open(file_path, 'r') as file:
+        # read all the content of the file.
+        self.line = int(self.line)
+        with open(self.open_file, 'r') as file:
             lines = file.readlines()
 
-        # Modify the desired line
-        if 1 <= line_number <= len(lines):
-            lines[line_number - 1] = new_content + '\n'  # Adjusting for 0-based indexing
+        # modify the specified line
+        if self.line > 0 and self.line <= len(lines):
+            # modify the line using list, adjusted for 0-based indexing because list starts with index 0.
+            lines[self.line - 1] = get_content(self.command_input)[3] + '\n'
 
-            # Write the updated content back to the file
-            with open(file_path, 'w') as file:
+            # write the updated content back to the file.
+            with open(self.open_file, 'w') as file:
                 file.writelines(lines)
         else:
-            print(f"Line number {line_number} is out of range.")
+            print(f"line must be in range of 1 to {len(lines)}")
 
     def writeend(self):
         with open(self.open_file, 'r+') as file:
-                lines = file.readlines()
-                self.line = int(self.line)
+            lines = file.readlines()
+            self.line = int(self.line)
                 
-                # check if input line is in range of file lines
-                if self.line > 0 and self.line <= len(lines):
+            # check if input line is in range of file lines
+            if self.line > 0 and self.line <= len(lines):
 
-                    # write at the end of the line using this
-                    lines[self.line - 1] = lines[self.line - 1].rstrip('\n') + get_content(self.command_parts, 3) + '\n'
-                    file.seek(0)
-                    file.writelines(lines)
+                # write at the end of the line using this
+                lines[self.line - 1] = lines[self.line - 1].rstrip('\n') + get_content(self.command_input)[3] + '\n'
+                file.seek(0)
+                file.writelines(lines)
 
-                else:
-                    print(f"line must be in range of 1 to {len(lines)}")
+            else:
+                print(f"line must be in range of 1 to {len(lines)}")
 
     def clearline(self):
         pass
@@ -193,7 +212,6 @@ class Microfilesys:
                     print("line not number")
             elif self.length >= 4:
                 if is_content(self.command_parts, 3):
-                    print(get_content(self.command_parts, 3))
                     self.writeend() # call write end function
             else:
                 print("invalid line length")
@@ -252,10 +270,10 @@ class Microfilesys:
         running = True
         while running:
             try:
-                command_input = input(f"microfilesys-{self.open_file}: " if self.open_file else "microfilesys: ")
+                self.command_input = input(f"microfilesys-{self.open_file}: " if self.open_file else "microfilesys: ")
                 
                 # quit keywords, same operation as the 'except KeyboardInterrupt' below
-                if command_input in ['q', 'quit', 'exit']:
+                if self.command_input in ['q', 'quit', 'exit']:
                     # make sure the program wont exit if in file operator mode and just go back into file manager mode.
                     if self.status == self.file_operator_mode:
                         self.open_file = None
@@ -272,11 +290,11 @@ class Microfilesys:
                 return
                 
             
-            if not command_input:
+            if not self.command_input:
                 continue
 
             # initialize all the variable
-            self.command_parts  = command_input.split()
+            self.command_parts  = self.command_input.split()
             self.command_join   = ' '.join(self.command_parts)
             self.length         = len(self.command_parts)
         
