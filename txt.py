@@ -1,20 +1,43 @@
-def writeline(file, index, content):
-    with open(file, 'r+') as file:
-        lines = file.readlines()
-        index = int(index)
-                
-        # check if input line is in range of file lines
-        if index > 0 and index <= len(lines):
+def replace_line(file_path, line_number, new_text):
+    # Read the contents of the file into a list of lines
+    try:
+        with open(file_path, 'r') as file:
+            lines = file.readlines()
+            print('line 13')
+            print(lines)
+    except FileNotFoundError:
+        print(f"File not found: {file_path}")
+        return
 
-            # write at the end of the line using this
-            lines[index - 1] = lines[index - 1].rstrip('\n') + content + '\n'
-            file.seek(0)
-            file.writelines(lines)
-
+    # Check if the file is empty
+    if not lines:
+        print('line 14')
+        print(lines)
+        lines = ['\n'] * line_number  # Initialize empty lines with '\n'
+        print('line 17')
+        print(lines)
+        lines[line_number - 1] = new_text + '\n'
+        print('line 20')
+        print(lines)
+    else:
+        # Make sure the line number is valid
+        if 1 <= line_number <= len(lines):
+            # Update the specific line with the new text
+            lines[line_number - 1] = new_text + '\n'
+            print('line 27')
+            print(lines)
         else:
-            print(f"line must be in range of 1 to {len(lines)}")
+            print(f"Invalid line number: {line_number}")
+            return
 
-user_input = 'write -l 1 "hello world"'
-user_input_split = user_input.split()
+    # Write the modified content back to the file
+    with open(file_path, 'w') as file:
+        file.writelines(lines)
+        print('line 36')
+        print(lines)
 
-print(user_input_split)
+# Example usage
+file_path = 'foo'
+line_number = 3
+new_text = 'This is the new content for line 3'
+replace_line(file_path, line_number, new_text)

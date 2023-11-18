@@ -2,14 +2,15 @@ import os
 
 # NOTE TO CHANGE
 # convert self.line to int 11/16
-#   writeend()
-#   line not number error
+#   writeend() FIX
+#   line not number error FIX
 #   get_content to just auto deetect not index specified FIX
 
 # TODO FIX:
-# writeend() having double quotes on content
-
+# writeend() having double quotes on content FIX
+# fix the indexing issue with writeline() and writeend()
 # check if the input is a content
+
 def is_content(command_parts, content_index):
     string = ' '.join(command_parts[content_index:]) 
     content_start = string[0]
@@ -95,6 +96,7 @@ class Microfilesys:
         self.option             = None
         self.content            = None
 
+        self.mute_log           = False
         self.open_file          = None
         self.current_file       = None
         self.line               = None
@@ -123,22 +125,22 @@ class Microfilesys:
         with open(self.open_file, 'r') as file:
             lines = file.readlines()
 
-        # modify the specified line
-        if self.line > 0 and self.line <= len(lines):
-            # modify the line using list, adjusted for 0-based indexing because list starts with index 0.
-            lines[self.line - 1] = get_content(self.command_input)[3] + '\n'
+            # modify the specified line
+            if self.line > 0 and self.line <= len(lines):
+                # modify the line using list, adjusted for 0-based indexing because list starts with index 0.
+                lines[self.line - 1] = get_content(self.command_input)[3] + '\n'
 
-            # write the updated content back to the file.
-            with open(self.open_file, 'w') as file:
-                file.writelines(lines)
-        else:
-            print(f"line must be in range of 1 to {len(lines)}")
+                # write the updated content back to the file.
+                with open(self.open_file, 'w') as file:
+                    file.writelines(lines)
+            else:
+                print(f"line must be in range of 1 to {len(lines)}")
 
     def writeend(self):
         with open(self.open_file, 'r+') as file:
             lines = file.readlines()
             self.line = int(self.line)
-                
+            
             # check if input line is in range of file lines
             if self.line > 0 and self.line <= len(lines):
 
@@ -152,15 +154,37 @@ class Microfilesys:
 
     def clearline(self):
         pass
+    
     def clearall(self):
-        pass
+        # lol
+        self.mute_log = True
+        self.delete(self.open_file)
+        self.create(self.open_file)
+        self.mute_log = False
 
-    def create(self):
-        pass
+    def create(self, filename):
+        if is_file(filename):
+            print(f"'{filename}' already exist")
+
+        else:
+            with open(filename, "w") as file:
+                if not self.mute_log:
+                    print(f"'{filename}' created successfully")
+                else:
+                    pass
+
     def open(self):
         pass
-    def delete(self):
-        pass
+    def delete(self, filename):
+        if not is_file(filename):
+            print(f"'{filename}' doesnt exist")
+        
+        else:
+            os.remove(filename)
+            if not self.mute_log:
+                print(f"'{filename}' deleted successfully")
+            else:
+                pass
 
     def handle_read_command(self):
         # option -l
@@ -225,7 +249,6 @@ class Microfilesys:
                 print(f"expexted line number after {self.option}")
             elif self.length == 3:
                 if self.line and self.line.isdigit():
-                    print("line")
                     self.clearline() # call clear line function
                 else:
                     print("line not number")
@@ -235,7 +258,6 @@ class Microfilesys:
         # option -a
         elif self.option in self.option_keywords['all']:
             if self.length == 2:
-                print("all")
                 self.clearall() # call clear all function
             else:
                 print("invalid all length")
@@ -243,12 +265,7 @@ class Microfilesys:
             print(f"{self.option} is not a valid option")
 
     def handle_create_command(self):
-        if is_file(self.current_file):
-            print(f"'{self.current_file}' already exist")
-
-        else:
-            with open(self.current_file, "w") as file:
-                print(f"'{self.current_file}' created successfully")
+        self.create(self.current_file)
 
     def handle_open_command(self):
         if not is_file(self.current_file):
@@ -259,12 +276,7 @@ class Microfilesys:
             self.status = self.file_operator_mode
 
     def handle_delete_command(self):
-        if not is_file(self.current_file):
-            print(f"'{self.current_file}' doesnt exist")
-        
-        else:
-            os.remove(self.current_file)
-            print(f"'{self.current_file}' deleted successfully")
+        self.delete(self.current_file)
 
     def start_microfilesys(self):
         running = True
