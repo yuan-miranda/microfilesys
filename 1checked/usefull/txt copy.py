@@ -1,9 +1,8 @@
 def replace_line(file_path, line_number, new_text):
-    # read the entire file content
+    # Read the contents of the file into a list of lines
     with open(file_path, 'r') as file:
         lines = file.readlines()
-    
-    # handle the case where a line is empty (that line would not be stored in the list).
+
     while line_number > len(lines):
         lines.append('\n')
     

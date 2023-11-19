@@ -120,21 +120,21 @@ class Microfilesys:
             print('\n' + file.read() + '\n')
     
     def writeline(self):
-        # read all the content of the file.
+        # read the entire file content
         self.line = int(self.line)
         with open(self.open_file, 'r') as file:
             lines = file.readlines()
+    
+        # handle the case where a line is empty (that line would not be stored in the list).
+        while self.line > len(lines):
+            lines.append('\n')
+    
+        # update the line with the new content
+        lines[self.line - 1] = get_content(self.command_input)[3] + '\n'
 
-            # modify the specified line
-            if self.line > 0 and self.line <= len(lines):
-                # modify the line using list, adjusted for 0-based indexing because list starts with index 0.
-                lines[self.line - 1] = get_content(self.command_input)[3] + '\n'
-
-                # write the updated content back to the file.
-                with open(self.open_file, 'w') as file:
-                    file.writelines(lines)
-            else:
-                print(f"line must be in range of 1 to {len(lines)}")
+        # write the modified line
+        with open(self.open_file, 'w') as file:
+            file.writelines(lines)
 
     def writeend(self):
         with open(self.open_file, 'r+') as file:
@@ -304,7 +304,7 @@ class Microfilesys:
             
             if not self.command_input:
                 continue
-
+# MAKE LINE INT
             # initialize all the variable
             self.command_parts  = self.command_input.split()
             self.command_join   = ' '.join(self.command_parts)
