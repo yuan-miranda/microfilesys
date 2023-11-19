@@ -1,15 +1,16 @@
 import os
 
 # NOTE TO CHANGE
-# convert self.line to int 11/16
+#   convert self.line to int 11/16 FIX
 #   writeend() FIX
 #   line not number error FIX
 #   get_content to just auto deetect not index specified FIX
 
 # TODO FIX:
 # writeend() having double quotes on content FIX
-# fix the indexing issue with writeline() and writeend()
-# check if the input is a content
+# fix the indexing issue with writeline() and writeend() FIX
+# check if the input is a content FIX
+# make line int FIX
 
 def is_content(command_parts, content_index):
     string = ' '.join(command_parts[content_index:]) 
@@ -121,7 +122,6 @@ class Microfilesys:
     
     def writeline(self):
         # read the entire file content
-        self.line = int(self.line)
         with open(self.open_file, 'r') as file:
             lines = file.readlines()
     
@@ -139,22 +139,29 @@ class Microfilesys:
     def writeend(self):
         with open(self.open_file, 'r+') as file:
             lines = file.readlines()
-            self.line = int(self.line)
             
             # check if input line is in range of file lines
-            if self.line > 0 and self.line <= len(lines):
+            if self.line >= 1 and self.line <= len(lines):
 
                 # write at the end of the line using this
                 lines[self.line - 1] = lines[self.line - 1].rstrip('\n') + get_content(self.command_input)[3] + '\n'
                 file.seek(0)
                 file.writelines(lines)
-
             else:
                 print(f"line must be in range of 1 to {len(lines)}")
 
     def clearline(self):
-        pass
-    
+        with open(self.open_file, 'r') as file:
+            lines = file.readlines()
+        
+        if self.line >= 1 and self.line <= len(lines):
+            lines[self.line - 1] = '' + '\n'
+            with open(self.open_file, 'w') as file:
+                file.writelines(lines)
+
+        else:
+            print(f"line must be in range of 1 to {len(lines)}")
+
     def clearall(self):
         # lol
         self.mute_log = True
@@ -192,10 +199,7 @@ class Microfilesys:
             if self.length == 2:
                 print(f"expexted line number after {self.option}")
             elif self.length == 3:
-                if self.line and self.line.isdigit():
-                    self.readline() # call read line function
-                else:
-                    print("line not number")
+                self.readline() # call read line function
             else:
                 print("invalid line length")
 
@@ -214,11 +218,7 @@ class Microfilesys:
             if self.length == 2:
                 print(f"expexted line number after {self.option}")
             elif self.length == 3:
-                if self.line and self.line.isdigit():
-                    print(f"expected content after line: {self.command_join} \"example content\"")
-                else:
-                    print("line not number")
-                    
+                print(f"expected content after line: {self.command_join} \"example content\"")
             elif self.length >= 4:
                 if is_content(self.command_parts, 3):
                     self.writeline() # call write line function
@@ -230,10 +230,7 @@ class Microfilesys:
             if self.length == 2:
                 print(f"expexted line number after {self.option}")
             elif self.length == 3:
-                if self.line and self.line.isdigit():
-                    print(f"expected content after line: {self.command_join} \"example content\"")
-                else:
-                    print("line not number")
+                print(f"expected content after line: {self.command_join} \"example content\"")
             elif self.length >= 4:
                 if is_content(self.command_parts, 3):
                     self.writeend() # call write end function
@@ -248,10 +245,7 @@ class Microfilesys:
             if self.length == 2:
                 print(f"expexted line number after {self.option}")
             elif self.length == 3:
-                if self.line and self.line.isdigit():
-                    self.clearline() # call clear line function
-                else:
-                    print("line not number")
+                self.clearline() # call clear line function
             else:
                 print("invalid line length")
 
@@ -304,7 +298,6 @@ class Microfilesys:
             
             if not self.command_input:
                 continue
-# MAKE LINE INT
             # initialize all the variable
             self.command_parts  = self.command_input.split()
             self.command_join   = ' '.join(self.command_parts)
@@ -317,17 +310,21 @@ class Microfilesys:
             
             self.current_file   = self.command_parts[1] if self.length == 2 else None
 
-            # if no files are open but is using file editor command
+            # file operator command
             if self.command in self.file_opetator_command_handlers:
                 if self.status == self.file_operator_mode:
                     if self.option:
-                        self.file_opetator_command_handlers[self.command]()
+                        if self.line and self.line.isdigit():
+                            self.line = int(self.line)
+                            self.file_opetator_command_handlers[self.command]()
+                        else:
+                            print("line not number")
                     else:
                         print("expected an option")
                 else:
                     print("status is currently in file manager, open a file first")
 
-            # check if is using file manager command
+            # file manager command
             elif self.command in self.file_manager_command_handlers:
                 if self.status == self.file_manager_mode:
                     if self.current_file:
