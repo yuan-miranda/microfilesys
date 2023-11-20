@@ -1,0 +1,3 @@
+KNOWN ISSUE (since 11/21/23)
+    [FIX][11/21/23][11/21/23] unreliable error message "missing" of is_content() exexutes even tho with double quotes. (it should print invalid content instead).
+    [---][11/21/23][--/--/--] readall() having a newline after, but writeline/end() couldnt read like one, (something has to do with .read() i think).
