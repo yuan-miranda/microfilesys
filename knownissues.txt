@@ -4,3 +4,4 @@ KNOWN ISSUE (since 11/21/23)
     [FIX][11/21/23][--/--/--][0.2.7][0.2.9] doesnt have help page
     [FIX][11/21/23][--/--/--][0.2.7][0.2.9] make into module
     [---][11/21/23][--/--/--][0.2.8][-.-.-] if a file is 16 long and 16 doesnt have text, it wouldnt be included. .readline() couldnt read line without '\n'.
+    [---][11/21/23][--/--/--][0.2.9][-.-.-] IT DOESNT WORK ON RPI PICO W MICROPYTHON REPL FU-
