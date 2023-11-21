@@ -1,3 +1,6 @@
+# Micropython.py v.0.2.8
+# last update: 11/21/23
+
 import os
 
 # return true when the list only contain a pair of double quotes. Used to validate get_content().
