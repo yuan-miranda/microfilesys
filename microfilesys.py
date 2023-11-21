@@ -1,4 +1,4 @@
-# Micropython.py v.0.2.8
+# Micropython.py v.0.2.9
 # last update: 11/21/23
 
 import os
@@ -89,14 +89,14 @@ class Microfilesys:
             'delete': self.delete_command_handler
         }
         self.option_keywords = {
-            'line': ['-l', '--line'],
-            'all' : ['-a', '--all'],
-            'end' : ['-e', '--end']
+            'line': ['-l', '--line', 'l', 'line'],
+            'all' : ['-a', '--all', 'a', 'all'],
+            'end' : ['-e', '--end', 'e', 'end']
         }
         self.expected_command_error = {
             'read'  : "expected 'read <-l line=int | -a>'",
             'write' : "expected 'write <-l | -e> <line=int content=\"sting\">'",
-            'clear' : "expected 'clear <-l line=int | -e>",
+            'clear' : "expected 'clear <-l line=int | -a>",
             'create': "expected 'create <file>",
             'open'  : "expected 'open <file>",
             'delete': "expected 'delete <file>"
@@ -120,6 +120,34 @@ class Microfilesys:
         self.option  = None
         self.line    = None
         self.content = None
+        
+    def display_help(self):
+        print(
+"""Usage:
+            read <-l line=int | -a>                         read the content from the file.
+            write <-l | -e> <line=int content="string">     write content to the file.
+            clear <-l line=int | -a>                        clear the content from the file.
+
+            create <file>                                   create a file on the directory.
+            open <file>                                     open a file (used to access file editor mode).
+            delete <file>                                   delete a file on the directory.
+Options:
+            -l --line                                       used to specify the line (available: read, write, clear).
+            -a --all                                        selects all the content of the file (available: read, clear).
+            -e --end                                        move the content to the end of the line (available: write).
+Argument:
+            line=int                                        specify the line number to work on i.e. 1, 10, 69.
+            content="string"                                specify the content to be written. Content must be enclosed with ""
+Example:
+            write --line 1 "hello, world!"                  writes "hello world!" at the first line of the file.
+            read -l 10                                      read the content of the line 10 of the file
+            delete example.txt                              delete the file named "example.txt".
+More Info:
+            1. theres no current way to have multiple flags at the same time, kind of complicated without argparse library.
+            2. commands arent flexible and has a predifined argument positions.
+            3. in some cases even tho the option is invalid it wont throw and error unless lines was specified.
+            4. if a file is 16 long and 16 doesnt have text, it wouldnt be included. .readline() couldnt read line without '\\n'.
+            4. non-flag'ish option format are added because this program was initially intended for mobile (to type faster).""")
 
     def create_file(self, file_name):
         if is_file(file_name):
@@ -338,6 +366,10 @@ class Microfilesys:
                 self.status = self.file_manager_mode
                 continue
 
+            if self.user_input in ['h', 'help', 'man', 'manual']:
+                self.display_help()
+                continue
+
             self.init_params()
 
             # check if the command is invalid, I used 'self.expected_command_error' because its the only
@@ -379,7 +411,3 @@ class Microfilesys:
                     continue
 
                 self.file_manager_command_handlers[self.command]()
-
-if __name__ == "__main__":
-    mfs = Microfilesys()
-    mfs.start_microfilesys()
