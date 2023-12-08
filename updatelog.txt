@@ -1,0 +1,16 @@
+v.0.3.4 12/08/2023
+    - Added version and last update info.
+    - Added updatelog.txt that contains all the update info's.
+    - Added 'ls' command that list all the files in the current working directory.
+    - Added 'remove <-l line=int | -a>' command that removes the desired line from the file.
+    - Modified the help page and removed some unnecessary parts of it.
+    - Command 'read' now has a prefix line number when printing lines.
+    - Command 'read, clear, remove' are almost identical so they are replaced on process_common_command().
+    - Made the 'current_open_file' to global to remove the annoying 'file_name' on every functions that needs it.
+
+    fixed issues:
+        - 'read --all' now doesnt print the newline buffer at the end of the file.
+
+    known issues:
+        - 'write --line 10 ""' ironically does nothing currently at all lol.
+        - 'read --all' is currently slow when printing large files I think.
