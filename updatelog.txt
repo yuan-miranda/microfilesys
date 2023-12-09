@@ -1,3 +1,15 @@
+v.0.3.5 12/10/2023
+    - Modified some of the function descriptions.
+
+    fixed issues:
+        - Removed the writing restriction where 'write --line 1 "print("hello")"' is invalid, now you can write
+        any content as long as it is enclosed with a pair of single or double quotation marks.
+        - 'write --line 10 ""' is fixed now, it doesnt write a content but makes a newline up to the specified line.
+
+    known issues:
+        - 'read --all' is currently slow when printing large files I think.
+
+
 v.0.3.4 12/08/2023
     - Added version and last update info.
     - Added updatelog.txt that contains all the update info's.

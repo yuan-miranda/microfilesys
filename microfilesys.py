@@ -1,5 +1,5 @@
-version = "v.0.3.4"
-updated = "12/08/23"
+version = "v.0.3.5"
+updated = "12/10/23"
 
 import os
 
@@ -28,13 +28,13 @@ list_aliases = ['ls', 'list']
 # boolean functions section
 def is_file(file_name):
     """
-    Check if the file exist on the current working directory.
+    Return True if the file exist on the current working directory, otherwise None.
     """
     return file_name in os.listdir()
 
 def is_line_number_in_range(line_number):
     """
-    Check if the line given is in the range of the lines of the file.
+    Return True if the line given is in the range of the lines of the file, otherwise None.
     """
     total_lines = get_file_length(current_open_file)
     return line_number >= 1 and line_number <= total_lines
@@ -61,7 +61,7 @@ def get_file_length(file_name):
 
 def get_line_number(raw_input):
     """
-    Return line if the line given exist, is a number, and non-negative, else None.
+    Return line if the line given exist, is a number, and non-negative, otherwise None.
     """
     try:
         input_parts = raw_input.split()
@@ -86,7 +86,7 @@ def get_line_number(raw_input):
 
 def get_line_number_in_range(raw_input):
     """
-    Return the line if its within the file lines length.
+    Return the line if its within the file lines length, otherwise None.
     """
     line_number = get_line_number(raw_input)
 
@@ -101,7 +101,7 @@ def get_line_number_in_range(raw_input):
 
 def get_content(raw_input):
     """
-    Return the content if it exist, is enclosed with a pair of double quotes, else None.
+    Return the content if it exist, Content string enclosed with a pair of single or double quotes, otherwise None.
     """
     input_parts = raw_input.split()
     command = input_parts[0]
@@ -116,8 +116,8 @@ def get_content(raw_input):
         print(f"Expected an content after '{command}', i.e. '{command} {option} {line_number} \"content\"'")
         return None
 
-    if not content.startswith('"') or not content.endswith('"') or content.count('"') != 2:
-        print("Content string should be enclosed with a pair of double quotes.")
+    if len(content) == 1 or not (content.startswith('"') and content.endswith('"')) and not (content.startswith("'") and content.endswith("'")):
+        print("Content string should be enclosed with a pair of single or double quotes.")
         return None
 
     # remove the double quotes.
@@ -232,7 +232,7 @@ def process_write_command(raw_input):
 
     content = get_content(raw_input)
 
-    if not content:
+    if content == None:
         return None
 
     if option in line_option_aliases:
@@ -326,10 +326,10 @@ Options:
 
 Argument:
     line=int                                        Specify the line number to work on, i.e. 1, 10, 69.
-    content="string"                                Specify a string to be written to the file. Content should be enclosed in double quotes, i.e. "example string".
+    content="string"                                Specify a string to be written to the file, i.e. "example string".
 
 Example:
-    write --line 1 "hello, world!"                  Write "hello, world!" at the first line of the file.
+    write --line 1 "print("Hello, World!")"         Write 'print("Hello, World!")' at the first line of the file.
     read -l 10                                      Read the content of line 10 of the file.
     delete example.txt                              Delete the file named "example.txt".
 
