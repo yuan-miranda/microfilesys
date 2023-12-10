@@ -1,4 +1,4 @@
-version = "v.0.3.5"
+version = "v.0.3.6"
 updated = "12/10/23"
 
 import os
@@ -315,7 +315,7 @@ f"""Syntax:
     clear <-l line=int | -a>                        Clear the content of from the file but keep the lines.
     remove <-l line=int | -a>                       Remove line of the file.
 
-    q quit exit                                     exit the program or go back to FM mode when in FE mode.
+    q quit exit                                     exit the program or go back to file manager mode when in file edior mode.
     h help man manual                               prints out the help page.
     ls list                                         list current directory and files.
 
@@ -329,7 +329,7 @@ Argument:
     content="string"                                Specify a string to be written to the file, i.e. "example string".
 
 Example:
-    write --line 1 "print("Hello, World!")"         Write 'print("Hello, World!")' at the first line of the file.
+    write --line 1 "print("Hello, World!")"         Write 'print("Hello, World!")' at the first line of the file (must open a file first).
     read -l 10                                      Read the content of line 10 of the file.
     delete example.txt                              Delete the file named "example.txt".
 

@@ -1,3 +1,14 @@
+v.0.3.6 12/10/2023
+    - Added README.md file.
+    - Fixed some of the descriptions on help page.
+
+    fixed issues:
+        - None.
+
+    known issues:
+        - 'read --all' is currently slow when printing large files I think.
+
+
 v.0.3.5 12/10/2023
     - Modified some of the function descriptions.
 
