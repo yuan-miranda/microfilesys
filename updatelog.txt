@@ -1,3 +1,17 @@
+v.0.3.7 12/25/23
+    - open, create, delete now has option to specify the path type (file or directory).
+    - Added 'version' to print out the version of the Microfilesys currently running.
+    - Added 'example' to print the entire command examples and descriptions.
+    - Added a functioning parent directory notation ('..') to navigate on the directory.
+    - Reworked most of the functions and added descriptions on each one.
+
+    fixed issues:
+        - Fixed the issue where current_path (aka current_file before) concatenates the new path to the last path.
+        - Added additional option for read command to print the entire file content without the line number faster.
+
+    known issues:
+        - Root directory is not available (and potentially would not be a feature).
+
 v.0.3.6 12/10/2023
     - Added README.md file.
     - Fixed some of the descriptions on help page.
