@@ -1,4 +1,14 @@
-v.0.3.7 12/25/23
+v.0.3.8 01/02/2024
+    - Updated README.md content.
+
+    fixed issues:
+        - None.
+
+    known issues:
+        - ls doesnt do anything other than printing the cwd items.
+        - Root directory is not available (closed).
+
+v.0.3.7 12/25/2023
     - open, create, delete now has option to specify the path type (file or directory).
     - Added 'version' to print out the version of the Microfilesys currently running.
     - Added 'example' to print the entire command examples and descriptions.

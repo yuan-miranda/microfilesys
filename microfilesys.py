@@ -1,5 +1,5 @@
-version = "v.0.3.7"
-updated = "12/25/23"
+version = "v.0.3.8"
+updated = "01/02/24"
 
 import os
 import re
