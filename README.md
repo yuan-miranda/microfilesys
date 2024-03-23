@@ -1,9 +1,9 @@
-### Micropython File Editor System (microfilesys)
+## Micropython File Editor System (microfilesys)
 A basic console-like file editor program designed for the Raspberry Pi Pico, capable of performing basic file operations such as creating and deleting files, as well as reading and writing to a file.
 
 > [microfilesys.py](https://github.com/yuan-miranda/microfilesys/blob/main/microfilesys.py) source code of the program.<br>
 
-### Usage
+## Usage
 ```
 Syntax:
     open <-f path="file.txt">                       Open a file for editing (used to access file editor mode).
@@ -35,7 +35,7 @@ Argument:
     path="file.txt"                                 Specify the path.
 ```
 
-### Example commands
+## Example commands
 
 | Command                     | Operation                            | Description                                                                       |
 |-----------------------------|--------------------------------------|-----------------------------------------------------------------------------------|
