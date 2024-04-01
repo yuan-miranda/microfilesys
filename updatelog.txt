@@ -61,3 +61,6 @@ v.0.3.4 12/08/2023
     known issues:
         - 'write --line 10 ""' ironically does nothing currently at all lol.
         - 'read --all' is currently slow when printing large files I think.
+
+v.0.4.1 03/31/23
+    Logging discontinued.
