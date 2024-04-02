@@ -1,4 +1,4 @@
-version = "v.0.4.1"
+version = "v.0.4.2"
 
 import os
 import sys
@@ -10,6 +10,9 @@ class microfilesys:
         self.indicator_read = False
 
         self.last_line_modified = 1
+
+        self.current_index = 0
+        self.action_array = []
 
     def is_file(self, file_name):
         return not os.stat(f"{os.getcwd()}/{file_name}")[0] & 0x4000
@@ -68,18 +71,20 @@ class microfilesys:
         total_lines = self.get_file_length(self.file_open)
         return 1 <= line_number <= total_lines
 
+    def update_action_array(self):
+        if self.current_index != len(self.action_array):
+            self.action_array = self.action_array[:self.current_index + 1]
+            self.current_index = len(self.action_array)
+        else:
+            self.current_index += 1
+            self.action_array.append(self.get_file_content(self.file_open))
 
     def parse_content(self, raw_input):
         # this finds the first and last occurance of '"' in the string.
         # you can input as many quotes as you want and it will still be valid.
         # '"' is used to enclose the content.
-        # returns false (temporarily) if the content is not enclosed with a pair of double quotes.
         if raw_input.count('\"') == 0:
             return ""
-
-        # elif raw_input.count('\"') > 2:
-        #     print("Error: Two double quotes are only allowed to enclose the content.")
-        #     return None
 
         first_quote = raw_input.find('\"') # first occurrence of double quote
         if first_quote == -1:
@@ -164,10 +169,19 @@ class microfilesys:
             with open(file, "r") as f:
                 self.file_open = file
                 self.is_open = True
+                self.current_index = 1
+                # store the initial file content.
+                self.action_array.append(self.get_file_content(self.file_open))
                 return True
         except Exception as e:
             print(f"Error: {e}")
             return False
+    
+    def close(self):
+        self.is_open = False
+        self.file_open = None
+        self.current_index = 0
+        self.action_array = []
 
     def read_line(self, line_number):
         file_lines = self.get_file_content(self.file_open)
@@ -228,7 +242,6 @@ class microfilesys:
             file.write('')
 
     def read_command(self, args):
-        # when no arguments are provided, print the help text.
         if len(args) == 1:
             print("Usage: read [--line <line> | --all] [--indicator]")
             print("Flags: --line <line>\tLine to read")
@@ -280,8 +293,8 @@ class microfilesys:
         else:
             print("Error: Invalid syntax did you mean 'read [--line <line> | --all] [--indicator]'?")
         self.indicator_read = False
+
     def write_command(self, args):
-        # when no arguments are provided, print the help text.
         if len(args) == 1:
             print("Usage: write [--line <line> | --end [line] | --all] [\"string\"]")
             print("Flags: --line <line>\tLine to write")
@@ -356,7 +369,6 @@ class microfilesys:
             
             # added "arg_index + 1 < len(args)" to prevent IndexError when the last argument is --end.
             # cause this assumes that the next argument is a line number, but --end is the last argument.
-            # error: write a "string" --end | write "string" a --end
             elif len(args) == 4 and arg_index + 1 < len(args) and line and has_content: # write --end [line] "string" | write "string" --end [line]
                 self.write_end(int(args[arg_index + 1]), content[1:-1])
             else:
@@ -380,7 +392,6 @@ class microfilesys:
             print("Error: Invalid syntax did you mean 'write [--line <line> | --end [line] | --all] [\"string\"]'?")
 
     def clear_command(self, args):
-        # when no arguments are provided, print the help text.
         if len(args) == 1:
             print("Usage: clear <--line <line> | --all>")
             print("Flags: --line <line>\tClear the line content")
@@ -425,7 +436,6 @@ class microfilesys:
         self.last_line_modified = 1
 
     def remove_command(self, args):
-        # when no arguments are provided, print the help text.
         if len(args) == 1:
             print("Usage: remove <--line <line> | --all>")
             print("Flags: --line <line>\tRemove the line")
@@ -511,15 +521,32 @@ class microfilesys:
                 if not self.is_open:
                     print("Error: No file is open.")
                 else:
-                    self.is_open = False
-                    self.file_open = None
+                    self.close()
                     print("File closed.")
 
             elif user_input[0] == "undo":
-                print("undo")
-                
+                if not self.is_open:
+                    print("Error: No file is open, use 'open <file>' to open and edit a file.")
+                    continue
+                if self.current_index <= 1:
+                    pass
+                else:
+                    print("undo")
+                    self.current_index -= 1
+                    self.clear_all()
+                    self.microfilesys_writelines(self.action_array[self.current_index - 1])
+
             elif user_input[0] == "redo":
-                print("redo")
+                if not self.is_open:
+                    print("Error: No file is open, use 'open <file>' to open and edit a file.")
+                    continue
+                if self.current_index  >= len(self.action_array):
+                    pass
+                else:
+                    print("redo")
+                    self.current_index += 1
+                    self.clear_all()
+                    self.microfilesys_writelines(self.action_array[self.current_index - 1])
 
             # navigate through the filesystem
             elif user_input[0] == "ls":
@@ -601,24 +628,25 @@ class microfilesys:
                     print("Error: No file is open, use 'open <file>' to open and edit a file.")
                     continue
                 self.write_command(user_input)
+                self.update_action_array()
 
             elif user_input[0] == "clear":
                 if not self.is_open:
                     print("Error: No file is open, use 'open <file>' to open and edit a file.")
                     continue
                 self.clear_command(user_input)
+                self.update_action_array()
 
             elif user_input[0] == "remove":
                 if not self.is_open:
                     print("Error: No file is open, use 'open <file>' to open and edit a file.")
                 self.remove_command(user_input)
-                
+                self.update_action_array()
             else:
                 print(f"Error: {user_input[0]} is not a valid command.")
             continue
 
 microfilesys().run()
-
 """
 ls [directory]
 cd <directory>
