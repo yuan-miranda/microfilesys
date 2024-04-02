@@ -1,4 +1,4 @@
-version = "v.0.4.2"
+version = "v.0.4.3"
 
 import os
 import sys
@@ -98,6 +98,28 @@ class microfilesys:
 
         content = raw_input[first_quote:first_quote + second_quote + 2]
         return content
+
+    def help(self):
+        print("""
+ls [directory]
+cd <directory>
+open <file>
+make <--file | --directory | --path> <filename>
+delete <--file | --directory | --path> <filename>
+
+read [--line <line> | --all] [--indicator]
+write [--line <line> | --end [line] | --all] ["string"]
+clear <--line <line> | --all>
+remove <--line <line> | --all>
+
+q quit exit
+h help ?
+v version
+close
+
+undo
+redo
+""")
 
     def ls(self, path):
         try:
@@ -507,25 +529,41 @@ class microfilesys:
             except KeyboardInterrupt:
                 break
             
+            if user_input[0] in ["read", "write", "clear", "remove"] and not self.is_open:
+                print("Error: No file is open, use 'open <file>' to open and edit a file.")
+
             # quit, help, version, undo, redo
-            if user_input[0] in ["q", "quit", "exit"]:
-                sys.exit(0)
+            elif user_input[0] in ["q", "quit", "exit"]:
+                if len(user_input) != 1:
+                    print("Error: expects 'q' or 'quit' or 'exit'.")
+                else:
+                    sys.exit(0)
 
             elif user_input[0] in ["h", "help", "?"]:
-                print("help")
+                if len(user_input) != 1:
+                    print("Error: expects 'h' or 'help' or '?'")
+                else:
+                    self.help()
 
             elif user_input[0] in ["v", "version"]:
-                print(f"microfilesys.py {version}")
+                if len(user_input) != 1:
+                    print("Error: expects 'v' or 'version'.")
+                else:
+                    print(f"microfilesys.py {version}")
 
             elif user_input[0] == "close":
-                if not self.is_open:
+                if len(user_input) != 1:
+                    print("Error: expects 'close'.")
+                elif not self.is_open:
                     print("Error: No file is open.")
                 else:
                     self.close()
                     print("File closed.")
 
             elif user_input[0] == "undo":
-                if not self.is_open:
+                if len(user_input) != 1:
+                    print("Error: expects 'undo'.")
+                elif not self.is_open:
                     print("Error: No file is open, use 'open <file>' to open and edit a file.")
                     continue
                 if self.current_index <= 1:
@@ -537,7 +575,9 @@ class microfilesys:
                     self.microfilesys_writelines(self.action_array[self.current_index - 1])
 
             elif user_input[0] == "redo":
-                if not self.is_open:
+                if len(user_input) != 1:
+                    print("Error: expects 'redo'.") 
+                elif not self.is_open:
                     print("Error: No file is open, use 'open <file>' to open and edit a file.")
                     continue
                 if self.current_index  >= len(self.action_array):
@@ -618,52 +658,22 @@ class microfilesys:
                     print("Error: expects 'open <file>'.")
                     
             elif user_input[0] == "read":
-                if not self.is_open:
-                    print("Error: No file is open, use 'open <file>' to open and edit a file.")
-                    continue
                 self.read_command(user_input)
 
             elif user_input[0] == "write":
-                if not self.is_open:
-                    print("Error: No file is open, use 'open <file>' to open and edit a file.")
-                    continue
                 self.write_command(user_input)
                 self.update_action_array()
 
             elif user_input[0] == "clear":
-                if not self.is_open:
-                    print("Error: No file is open, use 'open <file>' to open and edit a file.")
-                    continue
                 self.clear_command(user_input)
                 self.update_action_array()
 
             elif user_input[0] == "remove":
-                if not self.is_open:
-                    print("Error: No file is open, use 'open <file>' to open and edit a file.")
                 self.remove_command(user_input)
                 self.update_action_array()
             else:
                 print(f"Error: {user_input[0]} is not a valid command.")
+
             continue
 
 microfilesys().run()
-"""
-ls [directory]
-cd <directory>
-open <file>
-make <--file | --directory | --path> <filename>
-delete <--file | --directory | --path> <filename>
-
-read [--line <line> | --all] [--indicator]
-write [--line <line> | --end [line] | --all] ["string"]
-clear <--line <line> | --all>
-remove <--line <line> | --all>
-
-q quit exit
-h help ?
-v version
-close
-
-undo
-redo
-"""
