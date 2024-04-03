@@ -21,15 +21,9 @@ class microfilesys:
         return os.stat(f"{os.getcwd()}/{folder_name}")[0] & 0x4000
 
     def get_file_length(self, file_name):
-        """
-        Returns the line length of the file.
-        """
         return len(self.get_file_content(file_name))
 
     def get_file_content(self, file_name):
-        """
-        Returns a list of contents of the file.
-        """
         with open(file_name, 'r') as file:
             file_lines = file.readlines()
 
@@ -40,17 +34,13 @@ class microfilesys:
         return file_lines
 
     def microfilesys_writelines(self, file_lines):
-        """
-        Rewrites the whole file with the specified list of lines.
-        """
+        """Rewrites the whole file with the specified list of lines."""
         with open(self.file_open, 'w') as file:
             for line_content in file_lines:
                 file.write(line_content)
 
     def microfilesys_rjust(self, string, width, fill_char=' '):
-        """
-        Returns a right-justified string.
-        """
+        """Returns a right-justified string."""
         if len(string) >= width:
             return string
     
@@ -58,16 +48,7 @@ class microfilesys:
             padding = fill_char * (width - len(string))
             return padding + string
 
-    def get_file_length(self, file_name):
-        """
-        Returns the line length of the file.
-        """
-        return len(self.get_file_content(file_name))
-
     def is_line_number_in_range(self, line_number):
-        """
-        Returns True if the given line number is in the range of the lines of the file; otherwise, returns False.
-        """
         total_lines = self.get_file_length(self.file_open)
         return 1 <= line_number <= total_lines
 
@@ -219,17 +200,14 @@ redo
     
     def read_all(self):
         with open(self.file_open, 'r') as file:
-            file_lines = file.readlines()
-
-        if file_lines:
-            file_lines[-1] = file_lines[-1].rstrip('\n')
-
-        print(''.join(file_lines))        
+            for line in file:
+                print(line.rstrip("\n"))
 
     def read_all_indicator(self):
-        file_length = self.get_file_length(self.file_open)
-        for line in range(1, file_length + 1):
-            self.read_line_indicator(line)
+        file_lines = self.get_file_content(self.file_open)
+        for line_number, line_content in enumerate(file_lines, 1):
+            line_number = self.microfilesys_rjust(str(line_number), 4)
+            print(f"{line_number}| {line_content.rstrip('\n')}")
 
     def write_line(self, line_number, content):
         file_lines = self.get_file_content(self.file_open)
@@ -264,14 +242,6 @@ redo
             file.write('')
 
     def read_command(self, args):
-        if len(args) == 1:
-            print("Usage: read [--line <line> | --all] [--indicator]")
-            print("Flags: --line <line>\tLine to read")
-            print("       --all\t\tRead all lines")
-            print("       --indicator\tDisplay line number")
-            print("Ex:    read --line 1")
-            return
-        
         if "--indicator" in args:
             self.indicator_read = True
 
@@ -317,14 +287,6 @@ redo
         self.indicator_read = False
 
     def write_command(self, args):
-        if len(args) == 1:
-            print("Usage: write [--line <line> | --end [line] | --all] [\"string\"]")
-            print("Flags: --line <line>\tLine to write")
-            print("       --end [line]\tWrite at the end of the line")
-            print("       --all\t\tReplace all lines with the string")
-            print("Ex:    write --line 1 \"Hello, World!\"")
-            return
-
         content = " ".join([arg for arg in args if arg.startswith("\"")])
 
         # write "string" - write "string" at the end of the current line.
@@ -414,13 +376,6 @@ redo
             print("Error: Invalid syntax did you mean 'write [--line <line> | --end [line] | --all] [\"string\"]'?")
 
     def clear_command(self, args):
-        if len(args) == 1:
-            print("Usage: clear <--line <line> | --all>")
-            print("Flags: --line <line>\tClear the line content")
-            print("       --all\t\tClear all file content")
-            print("Ex:    clear --line 1")
-            return
-
         if "-l" in args or "--line" in args:
             arg_index = [args.index(arg) for arg in args if arg in ["-l", "--line"]][0]
             line = None
@@ -458,13 +413,6 @@ redo
         self.last_line_modified = 1
 
     def remove_command(self, args):
-        if len(args) == 1:
-            print("Usage: remove <--line <line> | --all>")
-            print("Flags: --line <line>\tRemove the line")
-            print("       --all\t\tRemove all file lines")
-            print("Ex:    remove --line 1")
-            return
-
         if "-l" in args or "--line" in args:
             arg_index = [args.index(arg) for arg in args if arg in ["-l", "--line"]][0]
             line = None
@@ -506,6 +454,7 @@ redo
             try:
                 if self.is_open:
                     user_input = input(f"{os.getcwd().replace("\\", "/")}/{self.file_open}[1/{self.get_file_length(self.file_open)}]: ")
+                    
                 else:
                     user_input = input(f"{os.getcwd().replace("\\", "/")}: ")
         
@@ -517,19 +466,23 @@ redo
                     content = self.parse_content(user_input)
                     if content == None:
                         continue
+
                     elif content:
                         # replace the content with an empty string to prevent it from being split, then replace it back with the actual content.
                         # the outcome will be, a list of arguments with the content enclosed with double quotes attaining the original content format.
                         user_input = user_input.replace(content, "\"\"").split()
                         user_input[user_input.index("\"\"")] = content
+
                     else:
                         user_input = user_input.split()
+
                 else:
                     user_input = user_input.split()
+
             except KeyboardInterrupt:
                 break
             
-            if user_input[0] in ["read", "write", "clear", "remove"] and not self.is_open:
+            if user_input[0] in ["read", "write", "clear", "remove", "undo", "redo"] and not self.is_open:
                 print("Error: No file is open, use 'open <file>' to open and edit a file.")
 
             # quit, help, version, undo, redo
@@ -563,9 +516,7 @@ redo
             elif user_input[0] == "undo":
                 if len(user_input) != 1:
                     print("Error: expects 'undo'.")
-                elif not self.is_open:
-                    print("Error: No file is open, use 'open <file>' to open and edit a file.")
-                    continue
+
                 if self.current_index <= 1:
                     pass
                 else:
@@ -577,9 +528,7 @@ redo
             elif user_input[0] == "redo":
                 if len(user_input) != 1:
                     print("Error: expects 'redo'.") 
-                elif not self.is_open:
-                    print("Error: No file is open, use 'open <file>' to open and edit a file.")
-                    continue
+
                 if self.current_index  >= len(self.action_array):
                     pass
                 else:
@@ -606,7 +555,11 @@ redo
             # create or delete files, directories, or paths
             elif user_input[0] == "make":
                 if len(user_input) == 1:
-                    print("Error: expects 'make <--file | --directory | --path> <filename>'.")
+                    print("Usage: make <--file | --directory | --path> <filename>")
+                    print("Flags: --file\t\tCreate a file")
+                    print("       --directory\tCreate a directory")
+                    print("       --path\t\tCreate a path")
+                    print("Ex:    make --file file.txt")
 
                 elif user_input[1] in ["-f", "--file"]:
                     if len(user_input) == 2:
@@ -628,7 +581,11 @@ redo
 
             elif user_input[0] == "delete":
                 if len(user_input) == 1:
-                    print("Error: expects 'delete <--file | --directory | --path> <filename>'.")
+                    print("Usage: delete <--file | --directory | --path> <filename>")
+                    print("Flags: --file\t\tDelete a file")
+                    print("       --directory\tDelete a directory")
+                    print("       --path\t\tDelete a path")
+                    print("Ex:    delete --file file.txt")
 
                 elif user_input[1] in ["-f", "--file"]:
                     if len(user_input) == 2:
@@ -649,7 +606,11 @@ redo
                         self.rmpath(user_input[2:])
 
             elif user_input[0] == "open":
-                if len(user_input) == 2:
+                if len(user_input) == 1:
+                    print("Usage: open <file>")
+                    print("Ex:    open file.txt")
+
+                elif len(user_input) == 2:
                     if self.is_open:
                         print(f"Error: {self.file_open}  is already open, use 'close' to close the file and open a new one.")
                     elif self.open(user_input[1]):
@@ -658,19 +619,45 @@ redo
                     print("Error: expects 'open <file>'.")
                     
             elif user_input[0] == "read":
-                self.read_command(user_input)
+                if len(user_input) == 1:
+                    print("Usage: read [--line <line> | --all] [--indicator]")
+                    print("Flags: --line <line>\tLine to read")
+                    print("       --all\t\tRead all lines")
+                    print("       --indicator\tDisplay line number")
+                    print("Ex:    read --line 1")
+                else:
+                    self.read_command(user_input)
 
             elif user_input[0] == "write":
-                self.write_command(user_input)
-                self.update_action_array()
+                if len(user_input) == 1:
+                    print("Usage: write [--line <line> | --end [line] | --all] [\"string\"]")
+                    print("Flags: --line <line>\tLine to write")
+                    print("       --end [line]\tWrite at the end of the line")
+                    print("       --all\t\tReplace all lines with the string")
+                    print("Ex:    write --line 1 \"Hello, World!\"")
+                else:
+                    self.write_command(user_input)
+                    self.update_action_array()
 
             elif user_input[0] == "clear":
-                self.clear_command(user_input)
-                self.update_action_array()
+                if len(user_input) == 1:
+                    print("Usage: clear <--line <line> | --all>")
+                    print("Flags: --line <line>\tClear the line content")
+                    print("       --all\t\tClear all file content")
+                    print("Ex:    clear --line 1")
+                else:
+                    self.clear_command(user_input)
+                    self.update_action_array()
 
             elif user_input[0] == "remove":
-                self.remove_command(user_input)
-                self.update_action_array()
+                if len(user_input) == 1:
+                    print("Usage: remove <--line <line> | --all>")
+                    print("Flags: --line <line>\tRemove the line")
+                    print("       --all\t\tRemove all file lines")
+                    print("Ex:    remove --line 1")
+                else:
+                    self.remove_command(user_input)
+                    self.update_action_array()
             else:
                 print(f"Error: {user_input[0]} is not a valid command.")
 
