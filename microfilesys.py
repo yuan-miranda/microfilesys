@@ -1,4 +1,4 @@
-version = "v.0.4.3"
+version = "v.0.4.5"
 
 import os
 import sys
@@ -454,7 +454,7 @@ redo
             try:
                 if self.is_open:
                     user_input = input(f"{os.getcwd().replace("\\", "/")}/{self.file_open}[1/{self.get_file_length(self.file_open)}]: ")
-                    
+
                 else:
                     user_input = input(f"{os.getcwd().replace("\\", "/")}: ")
         
