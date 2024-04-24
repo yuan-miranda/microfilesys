@@ -65,6 +65,28 @@ Redo the last undo edit operation.
 redo
 ```
 
+## Example Commands
+| Command                           | Operation                                             |
+|-----------------------------------|-------------------------------------------------------|
+| `ls`                              | List the current directory                            |
+| `cd ..`                           | Go to the parent directory                            |
+| `open file.txt`                   | Open a file named file.txt (must exists)              |
+| `make file.txt`                   | Create a file named "file.txt                         |
+| `make somefolder`                 | Create a folder named "somefolder"                    |
+| `delete file.txt`                 | Delete a file                                         |
+| `read --line 1`                   | Read the first line of the file                       |
+| `read --all --indicator`          | Read all the content of the file with line number     |
+| `write --end 1 "Hello, World!"`   | Write "Hello, World!" on the first line of the file   |
+| `write --all ""`                  | Clears all the content of the file                    |
+| `clear --line 1`                  | Clear the content of the first line of the file       |
+| `remove --line 1`                 | Remove the first line of the file                     |
+| `q, quit, exit`                   | Exit the program                                      |
+| `h, help, ?`                      | Display the help text                                 |
+| `v, version`                      | Display the program's version                         |
+| `close`                           | Close the currently opened file                       |
+| `undo`                            | Undo the last edit operation                          |
+| `redo`                            | Redo the last undo edit operation                     |
+
 ## Setup
 Packages used here come by default so no need for additional package installation, but if you insist:
 ```
