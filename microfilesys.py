@@ -1,4 +1,4 @@
-version = "v.0.4.8"
+version = "v.0.4.9"
 
 import os
 import sys
@@ -579,6 +579,9 @@ redo
                     else:
                         self.mkpath(user_input[2:])
 
+                else:
+                    print("Error: expects 'make <--file | --directory | --path> <filename>'.")
+
             elif user_input[0] == "delete":
                 if len(user_input) == 1:
                     print("Usage: delete <--file | --directory | --path> <filename>")
@@ -604,6 +607,9 @@ redo
                         print("Error: expects 'delete --path <filename>'.")
                     else:
                         self.rmpath(user_input[2:])
+                
+                else:
+                    print("Error: expects 'delete <--file | --directory | --path> <filename>'.")
 
             elif user_input[0] == "open":
                 if len(user_input) == 1:
