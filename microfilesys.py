@@ -1,5 +1,3 @@
-version = "v.0.4.9"
-
 import os
 import sys
 
@@ -95,7 +93,6 @@ remove <--line <line> | --all>
 
 q quit exit
 h help ?
-v version
 close
 
 undo
@@ -485,7 +482,7 @@ redo
             if user_input[0] in ["read", "write", "clear", "remove", "undo", "redo"] and not self.is_open:
                 print("Error: No file is open, use 'open <file>' to open and edit a file.")
 
-            # quit, help, version, undo, redo
+            # quit, help, undo, redo
             elif user_input[0] in ["q", "quit", "exit"]:
                 if len(user_input) != 1:
                     print("Error: expects 'q' or 'quit' or 'exit'.")
@@ -497,12 +494,6 @@ redo
                     print("Error: expects 'h' or 'help' or '?'")
                 else:
                     self.help()
-
-            elif user_input[0] in ["v", "version"]:
-                if len(user_input) != 1:
-                    print("Error: expects 'v' or 'version'.")
-                else:
-                    print(f"microfilesys.py {version}")
 
             elif user_input[0] == "close":
                 if len(user_input) != 1:
