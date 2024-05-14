@@ -6,9 +6,7 @@ class microfilesys:
         self.is_open = False
         self.file_open = None
         self.indicator_read = False
-
         self.last_line_modified = 1
-
         self.current_index = 0
         self.action_array = []
 
@@ -78,26 +76,8 @@ class microfilesys:
         content = raw_input[first_quote:first_quote + second_quote + 2]
         return content
 
-    def help(self):
-        print("""
-ls [directory]
-cd <directory>
-open <file>
-make <--file | --directory | --path> <filename>
-delete <--file | --directory | --path> <filename>
-
-read [--line <line> | --all] [--indicator]
-write [--line <line> | --end [line] | --all] ["string"]
-clear <--line <line> | --all>
-remove <--line <line> | --all>
-
-q quit exit
-h help ?
-close
-
-undo
-redo
-""")
+    def help(self, command):
+        pass # Fix this tomorrow.
 
     def ls(self, path):
         try:
@@ -251,7 +231,7 @@ redo
                 if args[arg_index + 1].isdigit():
                     line = int(args[arg_index + 1])
                     if not self.is_line_number_in_range(line):
-                        print(f"Error: line number must be in range of 1/{self.get_file_length(self.file_open)}.")
+                        print(f"Error: Line number must be in range of 1/{self.get_file_length(self.file_open)}.")
                         return
                 else:
                     print("Error: Line number must be an integer.")
@@ -315,7 +295,7 @@ redo
             elif has_content and len(args) == 4: # write --line <line> "string" | write "string" --line <line>
                 self.write_line(line, content[1:-1])
             else:
-                print("Error: Invalid syntax did you mean 'write --line <line> \"string\"'.")
+                print("Error: Invalid syntax did you mean 'write --line <line> \"string\"'?")
 
             self.last_line_modified = line
 
@@ -480,24 +460,26 @@ redo
                 break
             
             if user_input[0] in ["read", "write", "clear", "remove", "undo", "redo"] and not self.is_open:
-                print("Error: No file is open, use 'open <file>' to open and edit a file.")
+                print("Error: No opened file. Use 'open <file>' to open and edit a file.")
 
             # quit, help, undo, redo
             elif user_input[0] in ["q", "quit", "exit"]:
                 if len(user_input) != 1:
-                    print("Error: expects 'q' or 'quit' or 'exit'.")
+                    print("Error: Invalid command. Did you mean 'q' or 'quit' or 'exit'?")
                 else:
                     sys.exit(0)
 
             elif user_input[0] in ["h", "help", "?"]:
-                if len(user_input) != 1:
-                    print("Error: expects 'h' or 'help' or '?'")
+                if len(user_input) == 1:
+                    self.help(None)
+                elif len(user_input) == 2:
+                    self.help(user_input[1])
                 else:
-                    self.help()
+                    print("Error: Invalid command. Did you mean 'h, help, ? [command]'?")
 
             elif user_input[0] == "close":
                 if len(user_input) != 1:
-                    print("Error: expects 'close'.")
+                    print("Error: Invalid command. Did you mean 'close'?")
                 elif not self.is_open:
                     print("Error: No file is open.")
                 else:
@@ -506,7 +488,7 @@ redo
 
             elif user_input[0] == "undo":
                 if len(user_input) != 1:
-                    print("Error: expects 'undo'.")
+                    print("Error: Invalid command. Did you mean 'undo'?")
 
                 if self.current_index <= 1:
                     pass
@@ -518,7 +500,7 @@ redo
 
             elif user_input[0] == "redo":
                 if len(user_input) != 1:
-                    print("Error: expects 'redo'.") 
+                    print("Error: Invalid command. Did you mean 'redo'?") 
 
                 if self.current_index  >= len(self.action_array):
                     pass
@@ -535,18 +517,18 @@ redo
                 elif len(user_input) == 2:
                     self.ls(user_input[1])
                 else:
-                    print(f"Error: expects 'ls [directory]'.")
+                    print(f"Error: Invalid command. Did you mean 'ls [directory]'?")
 
             elif user_input[0] == "cd":
                 if len(user_input) == 2:
                     self.cd(user_input[1])
                 else:
-                    print(f"Error: expects 'cd <directory>'.")
+                    print(f"Error: Invalid command. Did you mean 'cd <directory>'?")
 
             # create or delete files, directories, or paths
             elif user_input[0] == "make":
                 if len(user_input) == 1:
-                    print("Usage: make <--file | --directory | --path> <filename>")
+                    print("Usage: make <--file | --directory | --path> <filename>...")
                     print("Flags: --file\t\tCreate a file")
                     print("       --directory\tCreate a directory")
                     print("       --path\t\tCreate a path")
@@ -554,28 +536,28 @@ redo
 
                 elif user_input[1] in ["-f", "--file"]:
                     if len(user_input) == 2:
-                        print("Error: expects 'make --file <filename>'.")
+                        print("Error: Invalid command. Did you mean 'make --file <filename>...'?")
                     else:
                         self.mkfile(user_input[2:])
 
                 elif user_input[1] in ["-d", "--directory"]:
                     if len(user_input) == 2:
-                        print("Error: expects 'make --directory <filename>'.")
+                        print("Error: Invalid command. Did you mean 'make --directory <filename>...'?")
                     else:
                         self.mkdir(user_input[2:])
 
                 elif user_input[1] in ["-p", "--path"]:
                     if len(user_input) == 2:
-                        print("Error: expects 'make --path <filename>'.")
+                        print("Error: Invalid command. Did you mean 'make --path <filename>...'?")
                     else:
                         self.mkpath(user_input[2:])
 
                 else:
-                    print("Error: expects 'make <--file | --directory | --path> <filename>'.")
+                    print("Error: Invalid command. Did you mean 'make <--file | --directory | --path> <filename>...'?")
 
             elif user_input[0] == "delete":
                 if len(user_input) == 1:
-                    print("Usage: delete <--file | --directory | --path> <filename>")
+                    print("Usage: delete <--file | --directory | --path> <filename>...")
                     print("Flags: --file\t\tDelete a file")
                     print("       --directory\tDelete a directory")
                     print("       --path\t\tDelete a path")
@@ -583,24 +565,24 @@ redo
 
                 elif user_input[1] in ["-f", "--file"]:
                     if len(user_input) == 2:
-                        print("Error: expects 'delete --file <filename>'.")
+                        print("Error: Invalid command. Did you mean 'delete --file <filename>...'?")
                     else:
                         self.rmfile(user_input[2:])
 
                 elif user_input[1] in ["-d", "--directory"]:
                     if len(user_input) == 2:
-                        print("Error: expects 'delete --directory <filename>'.")
+                        print("Error: Invalid command. Did you mean 'delete --directory <filename>...'?")
                     else:
                         self.rmdir(user_input[2:])
 
                 elif user_input[1] in ["-p", "--path"]:
                     if len(user_input) == 2:
-                        print("Error: expects 'delete --path <filename>'.")
+                        print("Error: Invalid command. Did you mean 'delete --path <filename>...'?")
                     else:
                         self.rmpath(user_input[2:])
                 
                 else:
-                    print("Error: expects 'delete <--file | --directory | --path> <filename>'.")
+                    print("Error: Invalid command. Did you mean 'delete <--file | --directory | --path> <filename>...'?")
 
             elif user_input[0] == "open":
                 if len(user_input) == 1:
@@ -613,7 +595,7 @@ redo
                     elif self.open(user_input[1]):
                         print(f"File '{self.file_open}' opened.")
                 else:
-                    print("Error: expects 'open <file>'.")
+                    print("Error: Invalid command. Did you mean 'open <file>'?")
                     
             elif user_input[0] == "read":
                 if len(user_input) == 1:
