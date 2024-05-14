@@ -90,7 +90,7 @@ redo
 ## Installation:
 **Note: You must have `Git` and `Python 3` or above installed prior to this setup.**
 1. Clone the repository on your machine:
-> Note: No need to download the whole repository, you can even just download or copy the content of [microfilesys.py](https://github.com/yuan-miranda/microfilesys/blob/main/microfilesys.py) and it will work fine.<br>
+> Note: No need to clone the repository, you can even just download or copy the contents of [microfilesys.py](https://github.com/yuan-miranda/microfilesys/blob/main/microfilesys.py) and it will still work fine.<br>
 ```
 git clone https://github.com/yuan-miranda/microfilesys.git
 ```
