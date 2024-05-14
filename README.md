@@ -88,9 +88,13 @@ redo
 | redo                            | Redo the last undo edit operation                     |
 
 ## Installation:
-Note: No need to download the whole repository, you can even just download or copy the content of [microfilesys.py](https://github.com/yuan-miranda/microfilesys/blob/main/microfilesys.py) and it will work fine.<br>
-1. You must have [Python 3](https://www.python.org/downloads/) or above installed.
-2. Packages used here come by default so no need for additional package installation, but if you insist:
+**Note: You must have `Git` and `Python 3` or above installed prior to this setup.**
+1. Clone the repository on your machine:
+> Note: No need to download the whole repository, you can even just download or copy the content of [microfilesys.py](https://github.com/yuan-miranda/microfilesys/blob/main/microfilesys.py) and it will work fine.<br>
+```
+git clone https://github.com/yuan-miranda/microfilesys.git
+```
+2. Modules used here come by default so no need for additional module installation, but if you insist:
 ```
 pip install os sys
 ```
