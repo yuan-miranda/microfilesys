@@ -71,9 +71,9 @@ redo
 | ls                              | List the current directory                            |
 | cd ..                           | Go to the parent directory                            |
 | open file.txt                   | Open a file named file.txt (must exists)              |
-| make file.txt                   | Create a file named "file.txt                         |
-| make somefolder                 | Create a folder named "somefolder"                    |
-| delete file.txt                 | Delete a file                                         |
+| make --file file.txt            | Create a file named "file.txt                         |
+| make --directory somefolder     | Create a folder named "somefolder"                    |
+| delete --file file.txt          | Delete a file                                         |
 | read --line 1                   | Read the first line of the file                       |
 | read --all --indicator          | Read all the content of the file with line number     |
 | write --end 1 "Hello, World!"   | Write "Hello, World!" on the first line of the file   |
@@ -82,7 +82,6 @@ redo
 | remove --line 1                 | Remove the first line of the file                     |
 | q, quit, exit                   | Exit the program                                      |
 | h, help, ?                      | Display the help text                                 |
-| v, version                      | Display the program's version                         |
 | close                           | Close the currently opened file                       |
 | undo                            | Undo the last edit operation                          |
 | redo                            | Redo the last undo edit operation                     |
