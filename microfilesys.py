@@ -5,41 +5,46 @@ class microfilesys:
     def __init__(self):
         self.is_open = False
         self.file_open = None
-        self.indicator_read = False
+        self.read_indicator = False
         self.last_line_modified = 1
         self.current_index = 0
         self.action_array = []
 
         # thanks ChatGPT for generating this very tedious help message lol.
         self.command_help = {
-            "ls": "ls [directory] - List the contents of the specified directory.",
+            "ls": "ls [directory] - List the contents of the directory.",
             "cd": "cd <directory> - Change the current working directory.",
             "make": "make <--file | --directory | --path> <filename>... - Create a file, directory, or path.\nFlags: --file\t\tCreate a file\n       --directory\tCreate a directory\n       --path\t\tCreate a path\nEx:    make --file file.txt",
             "delete": "delete <--file | --directory | --path> <filename>... - Delete a file, directory, or path.\nFlags: --file\t\tDelete a file\n       --directory\tDelete a directory\n       --path\t\tDelete a path\nEx:    delete --file file.txt",
             "open": "open <file> - Open a file to read and write.\nEx:    open file.txt",
             "close": "close - Close the currently opened file.",
-            "read": "read [--line <line> | --all] [--indicator] - Read the specified line or all lines content.\nFlags: --line <line>\tLine to read\n       --all\t\tRead all lines\n       --indicator\tDisplay line number\nEx:    read --line 1",
-            "write": "write [--line <line> | --end [line] | --all] [\"string\"] - Write content to the specified line, end of the line, or all lines.\nFlags: --line <line>\tLine to write\n       --end [line]\tWrite at the end of the line\n       --all\t\tReplace all lines with the string\nEx:    write --line 1 \"Hello, World!\"",
-            "clear": "clear <--line <line> | --all> - Clear the specified line or all lines content.\nFlags: --line <line>\tClear the line content\n       --all\t\tClear all file content\nEx:    clear --line 1",
-            "remove": "remove <--line <line> | --all> - Remove the specified line or all lines content.\nFlags: --line <line>\tRemove the line\n       --all\t\tRemove all file lines\nEx:    remove --line 1",
+            "read": "read [--line <line> | --all] [--indicator] - Read the line or all lines content.\nFlags: --line <line>\tLine to read\n       --all\t\tRead all lines\n       --indicator\tDisplay line number\nEx:    read --line 1",
+            "write": "write [--line <line> | --end [line] | --all] [\"string\"] - Write content to the line, end of the line, or all lines.\nFlags: --line <line>\tLine to write\n       --end [line]\tWrite at the end of the line\n       --all\t\tReplace all lines with the string\nEx:    write --line 1 \"Hello, World!\"",
+            "clear": "clear <--line <line> | --all> - Clear the line or all lines content.\nFlags: --line <line>\tClear the line content\n       --all\t\tClear all file content\nEx:    clear --line 1",
+            "remove": "remove <--line <line> | --all> - Remove the line or all lines content.\nFlags: --line <line>\tRemove the line\n       --all\t\tRemove all file lines\nEx:    remove --line 1",
             "undo": "undo - Undo the last action.",
             "redo": "redo - Redo the last action."
         }
 
     def is_file(self, file_name):
-        """Returns True if the specified file is a file, otherwise False."""
+        """Returns True if the file is a file, otherwise False."""
         return not os.stat(f"{os.getcwd()}/{file_name}")[0] & 0x4000
 
     def is_folder(self, folder_name):
-        """Returns True if the specified folder is a directory, otherwise False."""
+        """Returns True if the folder is a directory, otherwise False."""
         return os.stat(f"{os.getcwd()}/{folder_name}")[0] & 0x4000
 
+    def is_line_number_in_range(self, line_number):
+        """Returns True if the line number is in range of the file length, otherwise False."""
+        total_lines = self.get_file_length(self.file_open)
+        return 1 <= line_number <= total_lines
+
     def get_file_length(self, file_name):
-        """Returns the total number of lines in the specified file."""
+        """Returns the total number of lines in the file."""
         return len(self.get_file_content(file_name))
 
     def get_file_content(self, file_name):
-        """Returns the content of the specified file as a list of lines."""
+        """Returns the content of the file as a list of lines."""
         with open(file_name, 'r') as file:
             file_lines = file.readlines()
 
@@ -49,7 +54,7 @@ class microfilesys:
         return file_lines
 
     def microfilesys_writelines(self, file_lines):
-        """Rewrites the whole file with the specified list of lines."""
+        """Rewrites the whole file with the list of lines."""
         with open(self.file_open, 'w') as file:
             for line_content in file_lines:
                 file.write(line_content)
@@ -62,11 +67,6 @@ class microfilesys:
             padding = fill_char * (width - len(string))
             return padding + string
 
-    def is_line_number_in_range(self, line_number):
-        """Returns True if the specified line number is in range of the file length, otherwise False."""
-        total_lines = self.get_file_length(self.file_open)
-        return 1 <= line_number <= total_lines
-
     def update_action_array(self):
         """Updates the action array with the current file content."""
         if self.current_index != len(self.action_array):
@@ -76,25 +76,25 @@ class microfilesys:
             self.current_index += 1
             self.action_array.append(self.get_file_content(self.file_open))
 
-    def parse_content(self, raw_input):
+    def parse_content(self, string):
         """This finds the first and last occurance of '"' in the string.
         you can input as many quotes as you want and it will still be valid.
         '"' is used to enclose the content."""
-        if raw_input.count('\"') == 0:
+        if string.count('\"') == 0:
             return ""
-        first_quote = raw_input.find('\"') # first occurrence of double quote
+        first_quote = string.find('\"') # first occurrence of double quote
         if first_quote == -1:
             print("Error: No starting quote found")
             return None
-        second_quote = raw_input[first_quote + 1:].rfind('\"') # second occurrence of double quote
+        second_quote = string[first_quote + 1:].rfind('\"') # second occurrence of double quote
         if second_quote == -1:
             print("Error: No ending quote found")
             return None
-        content = raw_input[first_quote:first_quote + second_quote + 2]
+        content = string[first_quote:first_quote + second_quote + 2]
         return content
 
     def help(self, command):
-        """Prints the help message for the specified command. If no command is provided,
+        """Prints the help message for the command. If no command is provided,
         it prints all available commands keywords."""
         if command == None:
             print("Commands:")
@@ -104,7 +104,7 @@ class microfilesys:
             print(self.command_help[command])
             
     def ls(self, path):
-        """Lists the contents of the specified directory."""
+        """Lists the contents of the directory."""
         try:
             content = os.listdir(path)
             for item in content:
@@ -112,15 +112,15 @@ class microfilesys:
         except Exception as e:
             print(f"Error: {e}")
 
-    def cd(self, directory):
+    def cd(self, path):
         """Changes the current working directory."""
         try:
-            os.chdir(directory)
+            os.chdir(path)
         except Exception as e:
             print(f"Error: {e}")
 
     def mkdir(self, folders):
-        """Creates the specified directories."""
+        """Create directories."""
         for folder in folders:
             try:
                 os.mkdir(folder)
@@ -128,7 +128,7 @@ class microfilesys:
                 print(f"Error: {e}")
 
     def rmdir(self, folders):
-        """Removes the specified directories."""
+        """Remove directories."""
         for folder in folders:
             try:
                 os.rmdir(folder)
@@ -136,7 +136,7 @@ class microfilesys:
                 print(f"Error: {e}")
 
     def mkfile(self, files):
-        """Creates the specified files."""
+        """Create empty files."""
         for file in files:
             try:
                 with open(file, "w") as f:
@@ -145,7 +145,7 @@ class microfilesys:
                 print(f"Error: {e}")
 
     def rmfile(self, files):
-        """Removes the specified files."""
+        """Remove files."""
         for file in files:
             try:
                 os.remove(file)
@@ -153,7 +153,7 @@ class microfilesys:
                 print(f"Error: {e}")
 
     def mkpath(self, paths):
-        """Creates the specified directories recursively."""
+        """Create directories recursively."""
         for path in paths:
             try:
                 os.makedirs(path)
@@ -161,7 +161,7 @@ class microfilesys:
                 print(f"Error: {e}")
 
     def rmpath(self, paths):
-        """Recursively removes the specified directory. Based on Roberthh's implementation
+        """Recursively remove the contents of the directory, based on Roberthh's implementation
         https://forum.micropython.org/viewtopic.php?t=7512#p42783."""
         for path in paths:
             try:
@@ -176,7 +176,7 @@ class microfilesys:
                 print(f"Error: {e}")
 
     def open(self, file):
-        """Opens the specified file for reading and writing."""
+        """Opens the file for reading and writing operation."""
         try:
             with open(file, "r") as f:
                 self.file_open = file
@@ -190,41 +190,41 @@ class microfilesys:
             return False
     
     def close(self):
-        """Closes the currently opened file."""
+        """Close the currently opened file."""
         self.is_open = False
         self.file_open = None
         self.current_index = 0
         self.action_array = []
 
     def read_line(self, line_number):
-        """Reads the specified line content."""
+        """Reads the content of the line."""
         file_lines = self.get_file_content(self.file_open)
         line_content = file_lines[line_number - 1].rstrip('\n')
         print(line_content)
 
     def read_line_indicator(self, line_number):
-        """Reads the specified line content with line number."""
+        """Reads the content of the line with preceding line number."""
         file_lines = self.get_file_content(self.file_open)
         line_content = file_lines[line_number - 1].rstrip('\n')
         line_number = self.microfilesys_rjust(str(line_number), 4)
         print(f"{line_number}| {line_content}")
-    
+
     def read_all(self):
-        """Reads all lines content."""
+        """Reads the content of the file."""
         with open(self.file_open, 'r') as file:
             for line in file:
                 print(line.rstrip("\n"))
 
     def read_all_indicator(self):
-        """Reads all lines content with line number."""
+        """Reads the entire content of the file with preceding line number."""
         file_lines = self.get_file_content(self.file_open)
         for line_number, line_content in enumerate(file_lines, 1):
             line_number = self.microfilesys_rjust(str(line_number), 4)
             print(f"{line_number}| {line_content.rstrip('\n')}")
 
     def write_line(self, line_number, content):
-        """Writes the specified content at the specified line number.
-        If the line number is out of range, it appends the content at the end of the file."""
+        """Rewrites the specified line with the content.
+        If the line is out of range, it appends the content at the end of the file."""
         file_lines = self.get_file_content(self.file_open)
         while len(file_lines) < line_number:
             file_lines.append('\n')
@@ -233,14 +233,14 @@ class microfilesys:
         self.microfilesys_writelines(file_lines)
 
     def write_end(self, line_number, content):
-        """Writes the specified content at the end of the specified line number.
+        """Writes the content at the end of the line.
         If the line number is out of range, it appends the content at the end of the file."""
         file_lines = self.get_file_content(self.file_open)
         file_lines[line_number - 1] = file_lines[line_number - 1].rstrip('\n') + content + '\n'
         self.microfilesys_writelines(file_lines)
 
     def clear_line(self, line_number):
-        """Clears the specified line content."""
+        """Clears the line content."""
         file_lines = self.get_file_content(self.file_open)
         file_lines[line_number - 1] = '\n'
         self.microfilesys_writelines(file_lines)
@@ -252,7 +252,7 @@ class microfilesys:
         self.microfilesys_writelines(file_lines)
 
     def remove_line(self, line_number):
-        """Removes the specified line content."""
+        """Removes the line content."""
         file_lines = self.get_file_content(self.file_open)
         file_lines.pop(line_number - 1)
         self.microfilesys_writelines(file_lines)
@@ -263,9 +263,9 @@ class microfilesys:
             file.write('')
 
     def read_command(self, args):
-        """Parses the read command and executes the appropriate action."""
+        """Parses the args and executes the appropriate read command."""
         if "--indicator" in args:
-            self.indicator_read = True
+            self.read_indicator = True
         if "-l" in args or "--line" in args:
             arg_index = [args.index(arg) for arg in args if arg in ["-l", "--line"]][0]
             line = None
@@ -284,11 +284,11 @@ class microfilesys:
                 print("Error: Line number is not provided.")
                 return
 
-            # read --line <line>             - read the specified line content.
-            # read --line <line> --indicator - read the specified line content with line number.
+            # read --line <line>             - read the line content.
+            # read --line <line> --indicator - read the line content with line number.
             if len(args) == 3: # read --line <line>
                 self.read_line(line)
-            elif self.indicator_read and len(args) == 4: # read --line <line> --indicator | read --indicator --line <line>
+            elif self.read_indicator and len(args) == 4: # read --line <line> --indicator | read --indicator --line <line>
                 self.read_line_indicator(line)
             else:
                 print("Error: Invalid syntax did you mean 'read --line <line> --indicator'?")
@@ -297,16 +297,16 @@ class microfilesys:
             # read --all --indicator - read all lines content with line number.
             if len(args) == 2: #  read --all
                 self.read_all()
-            elif len(args) == 3 and self.indicator_read: # read --all --indicator | read --indicator --all
+            elif len(args) == 3 and self.read_indicator: # read --all --indicator | read --indicator --all
                 self.read_all_indicator()
             else:
                 print("Error: Invalid syntax did you mean 'read --all --indicator'?")
         else:
             print("Error: Invalid syntax did you mean 'read [--line <line> | --all] [--indicator]'?")
-        self.indicator_read = False
+        self.read_indicator = False
 
     def write_command(self, args):
-        """Parses the write command and executes the appropriate action."""
+        """Parses the args and executes the appropriate write command."""
         content = " ".join([arg for arg in args if arg.startswith("\"")])
 
         # write "string" - write "string" at the end of the current line.
@@ -330,7 +330,7 @@ class microfilesys:
                 return
             
             # write --line <line>          - do nothing.
-            # write --line <line> "string" - write "string" at the specified line.
+            # write --line <line> "string" - write "string" at the line.
             if len(args) == 3: # write --line <line>
                 # self.write_line(line, "")
                 pass
@@ -357,7 +357,7 @@ class microfilesys:
             # write --end                 - do nothing.
             # write --end [line]          - do nothing.
             # write --end "string"        - write "string" at the end of the file.
-            # write --end [line] "string" - write "string" at the end of the specified line.
+            # write --end [line] "string" - write "string" at the end of the line.
             if len(args) == 2: # write --end            
                 # self.write_end(self.get_file_length(self.file_open), "")
                 pass
@@ -390,7 +390,7 @@ class microfilesys:
             print("Error: Invalid syntax did you mean 'write [--line <line> | --end [line] | --all] [\"string\"]'?")
 
     def clear_command(self, args):
-        """Parses the clear command and executes the appropriate action."""
+        """Parses the args and executes the appropriate clear command."""
         if "-l" in args or "--line" in args:
             arg_index = [args.index(arg) for arg in args if arg in ["-l", "--line"]][0]
             line = None
@@ -409,7 +409,7 @@ class microfilesys:
                 print("Error: Line number is not provided.")
                 return
             
-            # clear --line <line> - clear the specified line content.
+            # clear --line <line> - clear the line content.
             if len(args) == 3: # clear --line <line>
                 self.clear_line(line)
             else:
@@ -425,7 +425,7 @@ class microfilesys:
         self.last_line_modified = 1
 
     def remove_command(self, args):
-        """Parses the remove command and executes the appropriate action."""
+        """Parses the args and executes the appropriate remove command."""
         if "-l" in args or "--line" in args:
             arg_index = [args.index(arg) for arg in args if arg in ["-l", "--line"]][0]
             line = None
@@ -444,7 +444,7 @@ class microfilesys:
                 print("Error: Line number is not provided.")
                 return
             
-            # remove --line <line> - remove the specified line content.
+            # remove --line <line> - remove the line content.
             if len(args) == 3: # remove --line <line>
                 self.remove_line(line)
             else:
@@ -460,7 +460,7 @@ class microfilesys:
         self.last_line_modified = 1
 
     def run(self):
-        """Main loop."""
+        """This is the main loop of the program, after executing the microfilesys.py, it runs an infinite loop that takes user input."""
         while True:
             try:
                 if self.is_open:
@@ -488,6 +488,7 @@ class microfilesys:
             except KeyboardInterrupt:
                 break
             
+            # prevent file editing specific commands from being executed without an opened file.
             if user_input[0] in ["read", "write", "clear", "remove", "undo", "redo"] and not self.is_open:
                 print("Error: No opened file. Use 'open <file>' to open and edit a file.")
 
