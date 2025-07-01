@@ -1,6 +1,6 @@
 import os
 import sys
-from main import (
+from microfilesys import (
     ls_command,
     cd_command,
     mkfile_command,
@@ -21,15 +21,13 @@ from main import (
     parse_content,
     writelines_to_file,
     help_command,
+    is_open,
+    file_open,
+    current_index,
+    action_array,
+    last_line_modified,
+    command_help,
 )
-
-is_open = False
-file_open = None
-read_indicator = False
-last_line_modified = 1
-current_index = 0
-action_array = []
-
 
 def main():
     """Main loop of the program that takes user input and executes commands."""

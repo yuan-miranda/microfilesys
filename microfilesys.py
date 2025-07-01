@@ -1,5 +1,12 @@
 import os
 
+is_open = False
+file_open = None
+read_indicator = False
+last_line_modified = 1
+current_index = 0
+action_array = []
+
 # command help messages for the microfilesys
 command_help = {
     "ls": "ls [directory] - List the contents of the directory.",
