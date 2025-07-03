@@ -19,8 +19,8 @@ command_help = {
     "write": 'write [--line <line> | --end [line] | --all] ["string"] - Write content to the line, end of the line, or all lines.\nFlags: --line <line>\tLine to write\n       --end [line]\tWrite at the end of the line\n       --all\t\tReplace all lines with the string\nEx:    write --line 1 "Hello, World!"',
     "clear": "clear <--line <line> | --all> - Clear the line or all lines content.\nFlags: --line <line>\tClear the line content\n       --all\t\tClear all file content\nEx:    clear --line 1",
     "remove": "remove <--line <line> | --all> - Remove the line or all lines content.\nFlags: --line <line>\tRemove the line\n       --all\t\tRemove all file lines\nEx:    remove --line 1",
-    "undo": "undo - Undo the last action.",
-    "redo": "redo - Redo the last action.",
+    "undo": "undo - Undo the last text operation.",
+    "redo": "redo - Redo the last undo action.",
 }
 
 
