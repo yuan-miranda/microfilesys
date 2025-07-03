@@ -28,7 +28,7 @@ python .\main.py
 python .\main.py
 ```
 
-For a generic help page
+### For a generic help page
 
 > You can also call the command name alone and it will print its usage description.
 
